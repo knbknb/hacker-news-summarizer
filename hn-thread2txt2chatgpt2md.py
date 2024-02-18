@@ -86,7 +86,7 @@ def set_data(model, chunk, instruction):
     if config['model'] != 'gpt-3.5-turbo-16k':
         freq_penalty = 0.1
     else:
-        freq_penalty = 0.0
+        freq_penalty = 0
     data = {"model": model,
         "messages": [
             {
@@ -130,6 +130,7 @@ def send_to_llm(config, headers, topic, chunks, first_response_flag):
         else:
             print(f"Error: {response_json['error']['message']}", file=sys.stderr)
         i += 1
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process Hacker News threads.')
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     parser.add_argument('--outfile', help='Output file', default=None)
     parser.add_argument('--api_key', help='OpenAI API key', required=True)
     parser.add_argument('--model', help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
-    parser.add_argument('--url', help='URL for the OpenAI API', default='https://api.openai.com/v1/chat/completions')
+    parser.add_argument('--url', help='URL for the LLM API', default='https://api.openai.com/v1/chat/completions')
     args = parser.parse_args()
 
     outfile = args.outfile if args.outfile else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
