@@ -1,0 +1,10 @@
+You will be provided with meeting notes about a topic:  
+Summarize the arguments, keyword-style, max 50 keywords. 
+Provide a table:
+
+- Participant/User name | Argument|  Argument comment/objections/questions (keyword-style)
+
+Some info about the input format: ContributionTopics are separated by 4 or more empty lines.
+User names can be found in lines containing a substring  matching  the regex '^\s*\[\d+\]\w+'  . 
+If no username is obvious, write (unknown). 
+If URLs are mentioned , include them a column. URLs match '- [\d+\]https://.+$'  .
