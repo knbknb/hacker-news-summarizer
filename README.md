@@ -52,7 +52,7 @@ Lots of ,md files are created in the respective directories. Partly for caching,
 ### Requirements
 
 See `requirements.txt` file.  
-Also, the lynx browser must be installed.
+You can install packages mentioned in the requirements with `pip install -r requirements.txt`.
 
 ### License
 

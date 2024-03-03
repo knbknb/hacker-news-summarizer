@@ -2,7 +2,8 @@
 import os
 import sys
 import re
-import subprocess
+#import subprocess
+import html2text
 from urllib.parse import urlparse
 import requests
 import json
@@ -28,12 +29,21 @@ def get_item_id(hnitem):
     query_params = dict(q.split('=') for q in parsed_url.query.split('&'))
     return query_params['id']
 
+#def download_hn_thread(hnitem, intermediate_file):
+#    subprocess.run(['lynx', '--dump', hnitem], stdout=open(intermediate_file, 'w'))
+
 def download_hn_thread(hnitem, intermediate_file):
-    subprocess.run(['lynx', '--dump', hnitem], stdout=open(intermediate_file, 'w'))
+    response = requests.get(hnitem)
+    response.raise_for_status()  # Raise an exception if the GET request failed
+    raw_text = html2text.html2text(response.text)
+    with open(intermediate_file, 'w') as f:
+        f.write(raw_text)
+    #with open(intermediate_file, 'w') as f:
+    #    f.write(response.text)
 
 def preprocess(infile, intermediate_file2, final_file, topic):
 
-    # remove HEADER 
+    # remove HEADER / first lines until "login" is found
     with open(infile, 'r') as f:
         lines = f.readlines()
     # add topic string to end of first line
@@ -47,9 +57,10 @@ def preprocess(infile, intermediate_file2, final_file, topic):
         print(f"File {infile} already exists, skipping preprocess.", file=sys.stderr)
     
     else:
+        # POSTS: remove lines with "next", "reply", "[s.gif]"
         with open(intermediate_file2, 'w') as f:
             for line in lines:
-                if not any(s in line for s in [']next', ']reply', '[s.gif']):
+                if not any(s in line for s in ['next[', 'reply[', '(s.gif)']):
                     f.write(line)
         # POSTS: remove lines with "ago" 
         with open(intermediate_file2, 'r') as f:
@@ -68,7 +79,7 @@ def preprocess(infile, intermediate_file2, final_file, topic):
             for line in lines:
                 f.write(re.sub(r'^\s*\[\d+\].–.$', '', line))
 
-        line_end = next(i for i, line in enumerate(lines) if re.search(r'\]Guidelines', line))
+        line_end = next(i for i, line in enumerate(lines) if re.search(r'newsguidelines\.html', line))
 
 
     # write to final file
@@ -182,8 +193,8 @@ if __name__ == "__main__":
 
 
 
-    topic_line = ": ".join(["The topic was", args.topic])
-    instruction = "\n".join([topic_line,instruction])
+    topic_line = print(f'The topic was: {args.topic}')
+    instruction = print(f'{topic_line}: {instruction}\n')
     first_response_flag = True
     headers = create_headers(config['api_key'])
     chunks_rawtext = chunk_text(text)
