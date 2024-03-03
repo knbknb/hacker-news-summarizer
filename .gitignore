@@ -4,3 +4,4 @@
 *.txt
 output/*
 !input/instruction.txt
+.env-example
