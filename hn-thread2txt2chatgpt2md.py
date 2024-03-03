@@ -60,18 +60,18 @@ def preprocess(infile, intermediate_file2, final_file, topic):
         # POSTS: remove lines with "next", "reply", "[s.gif]"
         with open(intermediate_file2, 'w') as f:
             for line in lines:
-                if not any(s in line for s in ['next[', 'reply[', '(s.gif)']):
+                if not any(s in line for s in ['(reply?', '(s.gif)', 'javascript:void']):
                     f.write(line)
-        # POSTS: remove lines with "ago" 
+
+        # POSTS: remove strings after "ago" 
         with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
-
         with open(intermediate_file2, 'w') as f:
             for line in lines:
-                f.write(re.sub(r'^(\s*\d+\.\w+) .+ ago .+$', r'\1', line))
+                f.write(re.sub(r'(\[\s*\d+ \w+ ago).+$', r'\1', line))
 
 
-    # FOOTER: remove lines starting with  "Guidelines...FAQ...Lists...API...Security" 
+    # FOOTER: remove lines containing  "newsguidelines.html" and after
         with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
 
@@ -93,7 +93,7 @@ def preprocess(infile, intermediate_file2, final_file, topic):
 def chunk_text(text, chunk_size=10000):
     return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
 
-def chunks_data(chunks):
+def chunks_data(chunks, instruction):
     chunks_data = []
     for chunk in chunks:
         chunks_data.append(set_data(config['model'], chunk, instruction))
@@ -186,17 +186,17 @@ if __name__ == "__main__":
     with open(final_file, 'r') as f:
         text = f.read()
     
-    print(f"Read {final_file}...{len(text)}  chars read.", file=sys.stderr)
+    print(f"Read {final_file}...:  {len(text)}  chars read.", file=sys.stderr)
     instruction_file_path = "input/instruction.txt"
     with open(instruction_file_path, 'r') as f:
         instruction = f.read()
 
 
 
-    topic_line = print(f'The topic was: {args.topic}')
-    instruction = print(f'{topic_line}: {instruction}\n')
+    topic_line = f'The topic was: {args.topic}'
+    instruction = f'{topic_line}: {instruction}\n'
     first_response_flag = True
     headers = create_headers(config['api_key'])
     chunks_rawtext = chunk_text(text)
-    chunks_data = chunks_data(chunks_rawtext)
+    chunks_data = chunks_data(chunks_rawtext, instruction)
     send_to_llm(config, headers, topic_line, chunks_data, first_response_flag)

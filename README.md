@@ -24,11 +24,11 @@ OPENAI_API_KEY="your_api_key"
 
 `./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"  --intermediate_file "being_single.md"`
 
-The `--intermediate_file` option writes to an intermediate file.  The file is then re-read, processed and printed to stdout.  This is useful for debugging.
+The `--intermediate_file` option writes to an intermediate file.  The file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
 
 ##### This writes to a file
 
-`./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"  --api_key  $OPENAI_API_KEY --intermediate_file "being_single.md" > being_single.md`
+`./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"  --api_key  $OPENAI_API_KEY --intermediate_file "being_single.md" > final_output/being_single.md`
 
 Here no OPENAI_API_KEY is defined in the environment.  The OPENAI_API_KEY is passed as an argument.  The output is redirected to a file.
 
@@ -39,6 +39,7 @@ After summarizing, you must customize the md file to your needs.  The script doe
 - [x] ~~Add requirements.txt~~
 - [x] ~~Add .env-example~~
 - [ ] Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)
+- [ ] Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking
 
 ### Directories created
 
@@ -47,7 +48,7 @@ The subdirectories are named `./data`, `./final_output`, `./input`, `./output`, 
 
 ### Files created
 
-Lots of ,md files are created in the respective directories. Partly for caching, partly for storing intermediate files.
+Lots of .md files are created in the respective directories. Partly for caching, partly for storing intermediate files.
 
 ### Requirements
 

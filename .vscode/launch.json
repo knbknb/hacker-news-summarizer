@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": ["--hnitem", "https://news.ycombinator.com/item?id=39580812",
+                    "--topic",   "Why do east Asian firms value drinking?",
+                    "--intermediate_file", "asian-cultures-value-drinking-alc.txt"]
+        }
+    ]
+}
