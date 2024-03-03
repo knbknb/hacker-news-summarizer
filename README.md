@@ -36,9 +36,9 @@ After summarizing, you must customize the md file to your needs.  The script doe
 
 ## TODO
 
-- [ ] Add requirements.txt
+- [x] ~~Add requirements.txt~~
 - [x] ~~Add .env-example~~
-- [ ] Correct code that processes chunked output (Table header is written for each chunk)
+- [ ] Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)
 
 ### Directories created
 
@@ -47,6 +47,15 @@ The subdirectories are named `./data`, `./final_output`, `./input`, `./output`, 
 
 ### Files created
 
-### Requirements.txt
+Lots of ,md files are created in the respective directories. PArtly for caching, partly for storing intermediate.
 
-Coming soon
+### Requirements
+
+See `requirements.txt` file.  
+Also, the lynx browser must be installed.
+
+### License
+
+BSD.
+
+Use it as you wish.  No warranty.  No support.  No liability.  No nothing.  Just use it at your own risk.

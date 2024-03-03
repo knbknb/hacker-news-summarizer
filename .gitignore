@@ -2,6 +2,7 @@
 *.md
 !README.md
 *.txt
+!requirements.txt
 output/*
 !input/instruction.txt
 .env-example
