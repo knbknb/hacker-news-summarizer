@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD001 -->
-# Hacker.news thread summarizer
+# Hacker-News thread summarizer
 
 README.md
 
@@ -47,7 +47,7 @@ The subdirectories are named `./data`, `./final_output`, `./input`, `./output`, 
 
 ### Files created
 
-Lots of ,md files are created in the respective directories. PArtly for caching, partly for storing intermediate.
+Lots of ,md files are created in the respective directories. Partly for caching, partly for storing intermediate files.
 
 ### Requirements
 
