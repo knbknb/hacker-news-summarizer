@@ -20,13 +20,13 @@ def get_item_id(hnitem):
     query_params = dict(q.split('=') for q in parsed_url.query.split('&'))
     return query_params['id']
 
-def download_hn_thread(hnitem, outfile):
-    subprocess.run(['lynx', '--dump', hnitem], stdout=open(outfile, 'w'))
+def download_hn_thread(hnitem, intermediate_file):
+    subprocess.run(['lynx', '--dump', hnitem], stdout=open(intermediate_file, 'w'))
 
-def preprocess(outfile, intermediate_file, final_file, topic):
+def preprocess(infile, intermediate_file2, final_file, topic):
 
     # remove HEADER 
-    with open(outfile, 'r') as f:
+    with open(infile, 'r') as f:
         lines = f.readlines()
     # add topic string to end of first line
     lines[0] = lines[0].strip() + f" {topic}\n"
@@ -34,29 +34,29 @@ def preprocess(outfile, intermediate_file, final_file, topic):
     lines = lines[line_start:]
 
 # if intermediate file does not exist, preprocess it
-    if os.path.isfile(intermediate_file):
+    if os.path.isfile(intermediate_file2):
         # send to standard error
-        print(f"File {outfile} already exists, skipping preprocess.", file=sys.stderr)
+        print(f"File {infile} already exists, skipping preprocess.", file=sys.stderr)
     
     else:
-        with open(intermediate_file, 'w') as f:
+        with open(intermediate_file2, 'w') as f:
             for line in lines:
                 if not any(s in line for s in [']next', ']reply', '[s.gif']):
                     f.write(line)
         # POSTS: remove lines with "ago" 
-        with open(intermediate_file, 'r') as f:
+        with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
 
-        with open(intermediate_file, 'w') as f:
+        with open(intermediate_file2, 'w') as f:
             for line in lines:
                 f.write(re.sub(r'^(\s*\d+\.\w+) .+ ago .+$', r'\1', line))
 
 
     # FOOTER: remove lines starting with  "Guidelines...FAQ...Lists...API...Security" 
-        with open(intermediate_file, 'r') as f:
+        with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
 
-        with open(intermediate_file, 'w') as f:
+        with open(intermediate_file2, 'w') as f:
             for line in lines:
                 f.write(re.sub(r'^\s*\[\d+\].–.$', '', line))
 
@@ -64,7 +64,7 @@ def preprocess(outfile, intermediate_file, final_file, topic):
 
 
     # write to final file
-        with open(intermediate_file, 'r') as f:
+        with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
 
         with open(final_file, 'w') as f:
@@ -134,25 +134,33 @@ def send_to_llm(config, headers, topic, chunks, first_response_flag):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process Hacker News threads.')
-    parser.add_argument('hnitem', help='Hacker News item URL')
-    parser.add_argument('topic', help='Topic of the discussion', default="Hacker news thread")
-    parser.add_argument('--outfile', help='Output file', default=None)
-    parser.add_argument('--api_key', help='OpenAI API key', required=True)
-    parser.add_argument('--model', help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
-    parser.add_argument('--url', help='URL for the LLM API', default='https://api.openai.com/v1/chat/completions')
+    parser.add_argument('--hnitem',  help='Hacker News item URL, or id, e.g. 39577113', required=True)
+    parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
+    parser.add_argument('--intermediate_file', help='Output file',              default=None)
+    parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
+                        required=False, default=os.getenv("OPENAI_API_KEY"))
+    parser.add_argument('--model',   help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
+    parser.add_argument('--url',     help='URL for the LLM API',      default='https://api.openai.com/v1/chat/completions')
     args = parser.parse_args()
+    config = {
+        'api_key': args.api_key,
+        'model':   args.model,
+        'url':     args.url,
+        'hnitem':  args.hnitem,
+        'topic' :  args.topic
+    }
 
-    outfile = args.outfile if args.outfile else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
-    outfile = os.path.join("output", outfile)
-    intermediate_file = f"{outfile}-intermediate.txt"
-    final_file = f"{outfile}-input-for-llm.txt"
+    intermediate_file = args.intermediate_file if args.intermediate_file else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
+    intermediate_file = os.path.join("output", intermediate_file)
+    intermediate_file2 = f"{intermediate_file}-intermediate2.txt"
+    final_file = f"{intermediate_file}-input-for-llm.txt"
 
     # if file does not exist, download it
-    if not os.path.isfile(outfile):
-        download_hn_thread(args.hnitem, outfile)
+    if not os.path.isfile(intermediate_file):
+        download_hn_thread(args.hnitem, intermediate_file)
     else:
-        print(f"File {outfile} already exists, skipping download.", file=sys.stderr)
-    preprocess(outfile, intermediate_file, final_file, args.topic)
+        print(f"File {intermediate_file} already exists, skipping download.", file=sys.stderr)
+    preprocess(intermediate_file, intermediate_file2, final_file, args.topic)
     
     with open(final_file, 'r') as f:
         text = f.read()
@@ -162,12 +170,8 @@ if __name__ == "__main__":
     with open(instruction_file_path, 'r') as f:
         instruction = f.read()
 
-    config = {
-        'api_key': args.api_key,
-        'model': args.model,
-        'url': args.url
-    }
-    
+
+
     topic_line = ": ".join(["The topic was", args.topic])
     instruction = "\n".join([topic_line,instruction])
     first_response_flag = True
