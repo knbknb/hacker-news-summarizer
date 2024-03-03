@@ -13,7 +13,15 @@ import argparse
 
 # Load .env file with API keys and credentials
 load_dotenv()
-# Add your OpenAI API key here
+
+def create_subdirectories():
+        subdirectories = ['./data', './final_output', './input', './output', './script_attic']
+        for directory in subdirectories:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            if not os.access(directory, os.W_OK):
+                print(f"Warning: {directory} is not writable.", file=sys.stderr)
+
 
 def get_item_id(hnitem):
     parsed_url = urlparse(hnitem)
@@ -141,6 +149,7 @@ if __name__ == "__main__":
                         required=False, default=os.getenv("OPENAI_API_KEY"))
     parser.add_argument('--model',   help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
     parser.add_argument('--url',     help='URL for the LLM API',      default='https://api.openai.com/v1/chat/completions')
+    
     args = parser.parse_args()
     config = {
         'api_key': args.api_key,
@@ -149,6 +158,7 @@ if __name__ == "__main__":
         'hnitem':  args.hnitem,
         'topic' :  args.topic
     }
+    create_subdirectories()
 
     intermediate_file = args.intermediate_file if args.intermediate_file else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
     intermediate_file = os.path.join("output", intermediate_file)

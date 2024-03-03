@@ -22,3 +22,8 @@ The `--intermediate_file` option writes to an intermediate file.  The file is th
 `./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"   --api_key  $OPENAI_API_KEY  --intermediate_file "being_single.md" > being_single.md`
 
 After summarizing, you must customize the md file to your needs.  The script does not do that for you.
+
+### Directories created
+
+The script creates subdirectories in the script directory.  
+The subdirectories are named `./data`, `./final_output`, `./input`, `./output`, `./script_attic`.
