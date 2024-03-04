@@ -5,7 +5,7 @@ README.md
 
 ## Description
 
-Use OpenAPI Python API to summarize a Hacker-News forum thread.  
+Use OpenAPI Python API to summarize (and flatten) a Hacker-News forum thread.
 
 The summary is written to a markdown file.  The markdown file is then read and printed to stdout. Use redirect to write to a file. Recommended: write into the `final_output` directory.
 
