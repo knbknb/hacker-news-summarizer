@@ -22,17 +22,17 @@ OPENAI_API_KEY="your_api_key"
 
 ##### This writes to stdout
 
-`./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"  --intermediate_file "being_single.md"`
+`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --intermediate_file "being_single.md"`
 
 The `--intermediate_file` option writes to an intermediate file.  The file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
 
 ##### This writes to a file
 
-`./hn-thread2txt2chatgpt2md.py "https://news.ycombinator.com/item?id=39416436"  "why you're still single"  --api_key  $OPENAI_API_KEY --intermediate_file "being_single.md" > final_output/being_single.md`
+`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY --intermediate_file "being_single.md" > final_output/being_single.md`
 
 Here no OPENAI_API_KEY is defined in the environment.  The OPENAI_API_KEY is passed as an argument.  The output is redirected to a file.
 
-After summarizing, you must customize the md file to your needs.  The script does not do that for you.
+After summarizing, you must customize the md file to your needs by hand. It might have a few formatting glitches. The script does not fix those for you.
 
 ## TODO
 
@@ -40,6 +40,7 @@ After summarizing, you must customize the md file to your needs.  The script doe
 - [x] ~~Add .env-example~~
 - [ ] Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)
 - [ ] Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking
+- [ ] Add an explanation of installation and 1 run example to an INSTALL.md or EXAMPLE.md file
 
 ### Directories created
 
