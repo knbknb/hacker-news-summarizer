@@ -18,6 +18,8 @@ You must define an environment variable `OPENAI_API_KEY` with your OpenAI API ke
 OPENAI_API_KEY="your_api_key"
 ```
 
+You must have an account with OpenAI and have an API key.  The API key is free for a limited number of requests.  You can use the free tier to test the script.
+
 #### Example
 
 ##### This writes to stdout
