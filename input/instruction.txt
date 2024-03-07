@@ -1,10 +1,11 @@
 You will be provided with meeting notes about a topic:  
-Summarize the arguments, keyword-style, max 50 keywords. 
-Provide a table:
+Summarize the arguments of each note, keyword-style, max 50 keywords. 
+Provide a markdown table:
 
-- Participant/User name | Argument|  Argument comment/objections/questions (keyword-style)
+- Participant/User name | Argument |  Argument comment/objections/questions (keyword-style)/URLs
 
-Some info about the input format: ContributionTopics are separated by 4 or more empty lines.
+Some info about the input format: 
+Contribution Topics are separated by ---|---|---  plus a few empty lines.
 User names can be found in lines containing a substring  matching  the regex '^\s*\[\d+\]\w+'  . 
 If no username is obvious, write (unknown). 
-If URLs are mentioned , include them a column. URLs match '- [\d+\]https://.+$'  .
+If URLs are mentioned , include them in the 3rd column. URLs are given in markdown format [...](https://...)'; include only the raw url. .

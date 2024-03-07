@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import datetime
 import os
 import sys
 import re
@@ -23,14 +24,18 @@ def create_subdirectories():
             if not os.access(directory, os.W_OK):
                 print(f"Warning: {directory} is not writable.", file=sys.stderr)
 
+def check_hnitem(hnitem):
+        '''If hnitem argument is just a mulit-digit-number, prepend the HN URL'''
+        
+        if hnitem.isdigit() and len(hnitem) > 5:
+            hnitem = f"https://news.ycombinator.com/item?id={hnitem}"
+        return hnitem
 
 def get_item_id(hnitem):
+    '''Extract the Hacker-News item id from the URL'''
     parsed_url = urlparse(hnitem)
     query_params = dict(q.split('=') for q in parsed_url.query.split('&'))
     return query_params['id']
-
-#def download_hn_thread(hnitem, intermediate_file):
-#    subprocess.run(['lynx', '--dump', hnitem], stdout=open(intermediate_file, 'w'))
 
 def download_hn_thread(hnitem, intermediate_file):
     response = requests.get(hnitem)
@@ -42,7 +47,8 @@ def download_hn_thread(hnitem, intermediate_file):
     #    f.write(response.text)
 
 def preprocess(infile, intermediate_file2, final_file, topic):
-
+    '''Preprocess the Hacker News thread file to remove header and footer, 
+        and to remove lines with "next", "reply", "[s.gif]" and "ago" strings.'''
     # remove HEADER / first lines until "login" is found
     with open(infile, 'r') as f:
         lines = f.readlines()
@@ -93,7 +99,7 @@ def preprocess(infile, intermediate_file2, final_file, topic):
 def chunk_text(text, chunk_size=10000):
     return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
 
-def chunks_data(chunks, instruction):
+def chunk_data(chunks, instruction):
     chunks_data = []
     for chunk in chunks:
         chunks_data.append(set_data(config['model'], chunk, instruction))
@@ -101,15 +107,19 @@ def chunks_data(chunks, instruction):
     return chunks_data
     
 def set_data(model, chunk, instruction):
-    
+    '''perplexity sonar models require freq_penalty > 0'''
     if config['model'] != 'gpt-3.5-turbo-16k':
         freq_penalty = 0.1
+        role = "system"
     else:
+        # gpt-3.5-turbo-16k requires freq_penalty=0
         freq_penalty = 0
-    data = {"model": model,
+        role = "assistant"
+    data = {
+        "model": model,
         "messages": [
             {
-                "role": "assistant",
+                "role": role,
                 "content": instruction
             },
             {
@@ -134,17 +144,18 @@ def create_headers(api_key):
     }
 
 ## LLM : ChatGPT-3.5 API
-def send_to_llm(config, headers, topic, chunks, first_response_flag):
+def send_to_llm(config, headers, topic, chunks):
     i = 1
+    first_response_flag = True
     for chunk in chunks:
-        print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}]", file=sys.stderr)
-        response = requests.post(config['url'], headers=headers, data=chunk)
+        print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
+        if not first_response_flag:
+            chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header:', 1)
+        response = requests.post(url=config['url'], headers=headers, data=chunk)
         response_json = response.json()
         
         if response.status_code == 200:
-            if first_response_flag:
-                print(f"topic: {topic} | ... | ...", topic)
-                first_response_flag = False
+            first_response_flag = False
             print(response_json['choices'][0]['message']['content'])
         else:
             print(f"Error: {response_json['error']['message']}", file=sys.stderr)
@@ -170,6 +181,7 @@ if __name__ == "__main__":
         'topic' :  args.topic
     }
     create_subdirectories()
+    hnitem = check_hnitem(args.hnitem)
 
     intermediate_file = args.intermediate_file if args.intermediate_file else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
     intermediate_file = os.path.join("output", intermediate_file)
@@ -178,7 +190,7 @@ if __name__ == "__main__":
 
     # if file does not exist, download it
     if not os.path.isfile(intermediate_file):
-        download_hn_thread(args.hnitem, intermediate_file)
+        download_hn_thread(hnitem, intermediate_file)
     else:
         print(f"File {intermediate_file} already exists, skipping download.", file=sys.stderr)
     preprocess(intermediate_file, intermediate_file2, final_file, args.topic)
@@ -187,16 +199,18 @@ if __name__ == "__main__":
         text = f.read()
     
     print(f"Read {final_file}...:  {len(text)}  chars read.", file=sys.stderr)
+    # the prompt is read from a file
     instruction_file_path = "input/instruction.txt"
     with open(instruction_file_path, 'r') as f:
         instruction = f.read()
 
-
+    print(config)
 
     topic_line = f'The topic was: {args.topic}'
-    instruction = f'{topic_line}: {instruction}\n'
-    first_response_flag = True
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    topic_line = f'{current_date}: {topic_line}'
     headers = create_headers(config['api_key'])
-    chunks_rawtext = chunk_text(text)
-    chunks_data = chunks_data(chunks_rawtext, instruction)
-    send_to_llm(config, headers, topic_line, chunks_data, first_response_flag)
+    chunked_rawtext = chunk_text(text)
+    chunked_data = chunk_data(chunked_rawtext, instruction)
+    
+    send_to_llm(config, headers, topic_line, chunked_data)
