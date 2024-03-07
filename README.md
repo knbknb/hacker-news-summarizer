@@ -44,7 +44,7 @@ Works provided you have the environment variable `OPENAI_API_KEY` defined proper
 
 ```bash
 TOPIC="why you're still single"
-./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" > final_output/$TOPIC.md
+./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" > "final_output/$TOPIC.md"
 ```
 
 ## TODO
