@@ -46,7 +46,7 @@ def download_hn_thread(hnitem, intermediate_file):
     #with open(intermediate_file, 'w') as f:
     #    f.write(response.text)
 
-def preprocess(infile, intermediate_file2, final_file, topic):
+def preprocess(infile, intermediate_file2, intermediate_file3, topic):
     '''Preprocess the Hacker News thread file to remove header and footer, 
         and to remove lines with "next", "reply", "[s.gif]" and "ago" strings.'''
     # remove HEADER / first lines until "login" is found
@@ -92,7 +92,7 @@ def preprocess(infile, intermediate_file2, final_file, topic):
         with open(intermediate_file2, 'r') as f:
             lines = f.readlines()
 
-        with open(final_file, 'w') as f:
+        with open(intermediate_file3, 'w') as f:
             for line in lines[:line_end]:
                 f.write(line)
 
@@ -166,7 +166,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process Hacker News threads.')
     parser.add_argument('--hnitem',  help='Hacker News item URL, or id, e.g. 39577113', required=True)
     parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
-    parser.add_argument('--intermediate_file', help='Output file',              default=None)
     parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
                         required=False, default=os.getenv("OPENAI_API_KEY"))
     parser.add_argument('--model',   help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
@@ -180,33 +179,34 @@ if __name__ == "__main__":
         'hnitem':  args.hnitem,
         'topic' :  args.topic
     }
+
+    topic_line = f"The topic was: {config['topic']}"
+    topic_cleaned = re.sub(r'\W+', '-', config['topic'])
+    
     create_subdirectories()
     hnitem = check_hnitem(args.hnitem)
 
-    intermediate_file = args.intermediate_file if args.intermediate_file else f"hacker-news-thread-{get_item_id(args.hnitem)}.txt"
-    intermediate_file = os.path.join("output", intermediate_file)
-    intermediate_file2 = f"{intermediate_file}-intermediate2.txt"
-    final_file = f"{intermediate_file}-input-for-llm.txt"
+    intermediate_file = f"{topic_cleaned}.txt" if args.topic else f"hacker-news-thread-{get_item_id(config.hnitem)}.txt"
+    intermediate_file = os.path.join("output", f"{topic_cleaned}-{config['model']}.txt")
+    intermediate_file2 = f"{re.sub('.txt', '', intermediate_file)}-intermediate2.txt"
+    intermediate_file3 = f"{re.sub('.txt', '', intermediate_file)}--input-for-llm.txt"
 
     # if file does not exist, download it
     if not os.path.isfile(intermediate_file):
         download_hn_thread(hnitem, intermediate_file)
     else:
         print(f"File {intermediate_file} already exists, skipping download.", file=sys.stderr)
-    preprocess(intermediate_file, intermediate_file2, final_file, args.topic)
+    preprocess(intermediate_file, intermediate_file2, intermediate_file3, args.topic)
     
-    with open(final_file, 'r') as f:
+    with open(intermediate_file3, 'r') as f:
         text = f.read()
     
-    print(f"Read {final_file}...:  {len(text)}  chars read.", file=sys.stderr)
+    print(f"Read {intermediate_file3}...:  {len(text)}  chars read.", file=sys.stderr)
     # the prompt is read from a file
     instruction_file_path = "input/instruction.txt"
     with open(instruction_file_path, 'r') as f:
         instruction = f.read()
 
-    print(config)
-
-    topic_line = f'The topic was: {args.topic}'
     current_date = datetime.now().strftime("%Y-%m-%d")
     topic_line = f'{current_date}: {topic_line}'
     headers = create_headers(config['api_key'])

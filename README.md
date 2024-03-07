@@ -24,17 +24,28 @@ You must have an account with OpenAI and have an API key.  The API key is free f
 
 ##### This writes to stdout
 
-`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --intermediate_file "being_single.md"`
+`./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "why you're still single"  `
 
-The `--intermediate_file` option writes to an intermediate file.  The file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
+The script writes to an intermediate file in subdir `output/`.  That file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
 
 ##### This writes to a file
 
-`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY --intermediate_file "being_single.md" > final_output/being_single.md`
+`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY > final_output/being_single.md`
 
 Here no OPENAI_API_KEY is defined in the environment.  The OPENAI_API_KEY is passed as an argument.  The output is redirected to a file.
 
-After summarizing, you must customize the md file to your needs by hand. It might have a few formatting glitches. The script does not fix those for you.
+After summarizing, you must customize the `.md` file to your needs by hand. It might have a few formatting glitches. The script does not fix those for you.
+
+But during fixing you start to read the summarized comments and get a better understanding of the thread.
+
+##### This is the shortest version
+
+Works provided you have the environment variable `OPENAI_API_KEY` defined properly.
+
+```bash
+TOPIC="why you're still single"
+./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" > final_output/$TOPIC.md
+```
 
 ## TODO
 
