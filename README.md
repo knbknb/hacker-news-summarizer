@@ -22,17 +22,17 @@ You must have an account with OpenAI and have an API key.  The API key is free f
 
 #### Example
 
-##### This writes to stdout
+##### This writes to a file
+
+Here no OPENAI_API_KEY was defined in the environment.
 
 `./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "why you're still single"  `
 
 The script writes to an intermediate file in subdir `output/`.  That file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
 
-##### This writes to a file
+`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
 
-`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY > final_output/being_single.md`
-
-Here no OPENAI_API_KEY is defined in the environment.  The OPENAI_API_KEY is passed as an argument.  The output is redirected to a file.
+Here no OPENAI_API_KEY is defined in the environment. Hence the OPENAI_API_KEY is passed as an argument.  
 
 After summarizing, you must customize the `.md` file to your needs by hand. It might have a few formatting glitches. The script does not fix those for you.
 
@@ -44,7 +44,14 @@ Works provided you have the environment variable `OPENAI_API_KEY` defined proper
 
 ```bash
 TOPIC="why you're still single"
-./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" > "final_output/$TOPIC.md"
+./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" 
+```
+
+Call Perplexity API instead (provided you have an API key for it)
+
+```bash
+TOPIC="why you're still single"
+ ./hn-thread2txt2chatgpt2md.py --hnitem "39416436" --api_key $PERPLEXITY_API_KEY --model mistral-7b-instruct   --topic "$TOPIC"  --url "https://api.perplexity.ai/chat/completions
 ```
 
 ## TODO

@@ -144,22 +144,24 @@ def create_headers(api_key):
     }
 
 ## LLM : ChatGPT-3.5 API
-def send_to_llm(config, headers, topic, chunks):
+def send_to_llm(config, headers, topic, chunks, final_outfile):
     i = 1
     first_response_flag = True
-    for chunk in chunks:
-        print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
-        if not first_response_flag:
-            chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header:', 1)
-        response = requests.post(url=config['url'], headers=headers, data=chunk)
-        response_json = response.json()
-        
-        if response.status_code == 200:
-            first_response_flag = False
-            print(response_json['choices'][0]['message']['content'])
-        else:
-            print(f"Error: {response_json['error']['message']}", file=sys.stderr)
-        i += 1
+    with open(final_outfile, 'w') as f:
+        print(f" model {config['model']}, topic {topic}\n\n", file=f)
+        for chunk in chunks:
+            print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
+            if not first_response_flag:
+                chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header:', 1)
+            response = requests.post(url=config['url'], headers=headers, data=chunk)
+            response_json = response.json()
+            
+            if response.status_code == 200:
+                first_response_flag = False
+                print(response_json['choices'][0]['message']['content'], file=f)
+            else:
+                print(f"Error: {response_json['error']['message']}", file=sys.stderr)
+            i += 1
         
 
 if __name__ == "__main__":
@@ -190,6 +192,7 @@ if __name__ == "__main__":
     intermediate_file = os.path.join("output", f"{topic_cleaned}-{config['model']}.txt")
     intermediate_file2 = f"{re.sub('.txt', '', intermediate_file)}-intermediate2.txt"
     intermediate_file3 = f"{re.sub('.txt', '', intermediate_file)}--input-for-llm.txt"
+    final_outfile = os.path.join("final_output", f"{topic_cleaned}-{config['model']}.md")
 
     # if file does not exist, download it
     if not os.path.isfile(intermediate_file):
@@ -213,4 +216,4 @@ if __name__ == "__main__":
     chunked_rawtext = chunk_text(text)
     chunked_data = chunk_data(chunked_rawtext, instruction)
     
-    send_to_llm(config, headers, topic_line, chunked_data)
+    send_to_llm(config, headers, topic_line, chunked_data, final_outfile)
