@@ -51,7 +51,7 @@ Call Perplexity API instead (provided you have an API key for it)
 
 ```bash
 TOPIC="why you're still single"
- ./hn-thread2txt2chatgpt2md.py --hnitem "39416436" --api_key $PERPLEXITY_API_KEY --model mistral-7b-instruct   --topic "$TOPIC"  --url "https://api.perplexity.ai/chat/completions
+ ./hn-thread2txt2chatgpt2md.py --hnitem "39416436" --api_key $PERPLEXITY_API_KEY --model mistral-7b-instruct   --topic "$TOPIC"  --url "https://api.perplexity.ai/chat/completions"
 ```
 
 ## TODO

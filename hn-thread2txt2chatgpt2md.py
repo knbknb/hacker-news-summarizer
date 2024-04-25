@@ -170,8 +170,8 @@ if __name__ == "__main__":
     parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
     parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
                         required=False, default=os.getenv("OPENAI_API_KEY"))
-    parser.add_argument('--model',   help='Model to use for the LLM', default='gpt-3.5-turbo-16k')
-    parser.add_argument('--url',     help='URL for the LLM API',      default='https://api.openai.com/v1/chat/completions')
+    parser.add_argument('--model',   help='Model to use for the LLM, e.g. "mistral-7b-instruct"', default='gpt-3.5-turbo-16k')
+    parser.add_argument('--url',     help='URL for the LLM API, e.g. https://api.perplexity.ai/chat/completions',      default='https://api.openai.com/v1/chat/completions')
     
     args = parser.parse_args()
     config = {
