@@ -25,7 +25,7 @@ def create_subdirectories():
                 print(f"Warning: {directory} is not writable.", file=sys.stderr)
 
 def check_hnitem(hnitem):
-        '''If hnitem argument is just a mulit-digit-number, prepend the HN URL'''
+        '''If hnitem argument is just a multi-digit-number, prepend the HN URL'''
         
         if hnitem.isdigit() and len(hnitem) > 5:
             hnitem = f"https://news.ycombinator.com/item?id={hnitem}"
@@ -74,7 +74,7 @@ def preprocess(infile, intermediate_file2, intermediate_file3, topic):
             lines = f.readlines()
         with open(intermediate_file2, 'w') as f:
             for line in lines:
-                f.write(re.sub(r'(\[\s*\d+ \w+ ago).+$', r'\1', line))
+                f.write(re.sub(r'(\[\s*\d+ \w+ ago).+$', r'', line))
 
 
     # FOOTER: remove lines containing  "newsguidelines.html" and after
@@ -106,7 +106,7 @@ def chunk_data(chunks, instruction):
     print(f"Number of data chunks: {len(chunks_data)}", file=sys.stderr)
     return chunks_data
     
-def set_data(model, chunk, instruction):
+def set_data(model, chunk, instruction, max_tokens=1024):
     '''perplexity sonar models require freq_penalty > 0'''
     if config['model'] != 'gpt-3.5-turbo-16k':
         freq_penalty = 0.1
@@ -131,7 +131,7 @@ def set_data(model, chunk, instruction):
         "top_p": 1,
         "n": 1,
         "stream": False,
-        "max_tokens": 2500,
+        "max_tokens": max_tokens,
         "presence_penalty": 0,
         "frequency_penalty": freq_penalty
     }
@@ -143,7 +143,7 @@ def create_headers(api_key):
         "Authorization": f"Bearer {api_key}"
     }
 
-## LLM : ChatGPT-3.5 API
+## LLM : ChatGPT-3.5 API or Perplexity supported models
 def send_to_llm(config, headers, topic, chunks, final_outfile):
     i = 1
     first_response_flag = True
@@ -152,7 +152,7 @@ def send_to_llm(config, headers, topic, chunks, final_outfile):
         for chunk in chunks:
             print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
             if not first_response_flag:
-                chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header:', 1)
+                chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header, or remove the table header:', 1)
             response = requests.post(url=config['url'], headers=headers, data=chunk)
             response_json = response.json()
             
@@ -181,19 +181,20 @@ if __name__ == "__main__":
         'hnitem':  args.hnitem,
         'topic' :  args.topic
     }
-
-    topic_line = f"The topic was: {config['topic']}"
-    topic_cleaned = re.sub(r'\W+', '-', config['topic'])
-    
     create_subdirectories()
     hnitem = check_hnitem(args.hnitem)
 
+    topic_line = f"The topic was: {config['topic']}, hnitem: {hnitem}"
+    topic_cleaned = re.sub(r'\W+', '-', f"{config['topic']}-{hnitem}")
+    
+    
     intermediate_file = f"{topic_cleaned}.txt" if args.topic else f"hacker-news-thread-{get_item_id(config.hnitem)}.txt"
     intermediate_file = os.path.join("output", f"{topic_cleaned}-{config['model']}.txt")
     intermediate_file2 = f"{re.sub('.txt', '', intermediate_file)}-intermediate2.txt"
     intermediate_file3 = f"{re.sub('.txt', '', intermediate_file)}--input-for-llm.txt"
     final_outfile = os.path.join("final_output", f"{topic_cleaned}-{config['model']}.md")
-
+    max_tokens = 4000
+    chunk_size = int(max_tokens * 2.5)
     # if file does not exist, download it
     if not os.path.isfile(intermediate_file):
         download_hn_thread(hnitem, intermediate_file)
@@ -213,7 +214,7 @@ if __name__ == "__main__":
     current_date = datetime.now().strftime("%Y-%m-%d")
     topic_line = f'{current_date}: {topic_line}'
     headers = create_headers(config['api_key'])
-    chunked_rawtext = chunk_text(text)
+    chunked_rawtext = chunk_text(text, chunk_size)
     chunked_data = chunk_data(chunked_rawtext, instruction)
     
     send_to_llm(config, headers, topic_line, chunked_data, final_outfile)
