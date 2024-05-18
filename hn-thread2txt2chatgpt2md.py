@@ -24,12 +24,13 @@ def create_subdirectories():
             if not os.access(directory, os.W_OK):
                 print(f"Warning: {directory} is not writable.", file=sys.stderr)
 
-def check_hnitem(hnitem):
+def check_hnitem(hnitem, hnitem_id=None):
         '''If hnitem argument is just a multi-digit-number, prepend the HN URL'''
-        
         if hnitem.isdigit() and len(hnitem) > 5:
             hnitem = f"https://news.ycombinator.com/item?id={hnitem}"
-        return hnitem
+            hnitem_id = get_item_id(hnitem)
+        hnitem_dict = {'hnitem': hnitem, 'hnitem_id': hnitem_id}
+        return hnitem_dict
 
 def get_item_id(hnitem):
     '''Extract the Hacker-News item id from the URL'''
@@ -108,11 +109,13 @@ def chunk_data(chunks, instruction):
 
 def set_data(model, chunk, instruction, max_tokens=1024):
     '''perplexity sonar models require freq_penalty > 0'''
-    if config['model'] != 'gpt-3.5-turbo-16k':
+    #if config['model'] != 'gpt-3.5-turbo-16k':
+    # if model does not match gpt, set freq_penalty to 0.1
+    if not re.match(r'^gpt', model):
         freq_penalty = 0.1
         role = "system"
     else:
-        # gpt-3.5-turbo-16k requires freq_penalty=0
+        # gpt-4o and gpt-3.5-turbo-16k require freq_penalty=0
         freq_penalty = 0
         role = "assistant"
     data = {
@@ -143,7 +146,7 @@ def create_http_headers(api_key):
         "Authorization": f"Bearer {api_key}"
     }
 
-## LLM : ChatGPT-3.5 API or Perplexity supported models
+## LLM : ChatGPT-3.5, gpt-4o API or Perplexity supported models
 def send_to_llm(config, headers, topic, chunks, final_outfile):
     i = 1
     first_response_flag = True
@@ -152,7 +155,7 @@ def send_to_llm(config, headers, topic, chunks, final_outfile):
         for chunk in chunks:
             print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
             if not first_response_flag:
-                chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header, or remove the table header:', 1)
+                chunk = chunk.replace('Provihttps://api.perplexity.ai/chat/completionsde a markdown table:', 'Provide a markdown table, but do not provide a table header, or remove the table header:', 1)
             response = requests.post(url=config['url'], headers=headers, data=chunk)
             response_json = response.json()
             
@@ -170,7 +173,7 @@ if __name__ == "__main__":
     parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
     parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
                         required=False, default=os.getenv("OPENAI_API_KEY"))
-    parser.add_argument('--model',   help='Model to use for the LLM, e.g. "mistral-7b-instruct"', default='gpt-3.5-turbo-16k')
+    parser.add_argument('--model',   help='Model to use for the LLM, e.g. "mistral-7b-instruct"', default='gpt-4o') # gpt-3.5-turbo-16k
     parser.add_argument('--url',     help='URL for the LLM API, e.g. https://api.perplexity.ai/chat/completions',      default='https://api.openai.com/v1/chat/completions')
     
     args = parser.parse_args()
@@ -182,9 +185,11 @@ if __name__ == "__main__":
         'topic' :  args.topic
     }
     create_subdirectories()
-    hnitem = check_hnitem(args.hnitem)
+    hnitem_dict = check_hnitem(args.hnitem)
+    hnitem = hnitem_dict['hnitem']
+    hnitem_id = hnitem_dict['hnitem_id']
 
-    topic_line = f"The topic was: {config['topic']}, hnitem: {hnitem}"
+    topic_line = f"# HN Topic: [{config['topic']}]({hnitem}), (hnitem id {hnitem_id}), and discussion"
     topic_cleaned = re.sub(r'\W+', '-', f"{config['topic']}-{hnitem}")
     
     
