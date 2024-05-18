@@ -1,0 +1,29 @@
+import requests
+from bs4 import BeautifulSoup
+
+# Fetch the HTML
+response = requests.get('https://docs.perplexity.ai/docs/model-cards')
+
+# Parse the HTML
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Find the first and second tables
+tables = soup.find_all('table')
+
+# Function to print table rows as text
+def print_table(table):
+    #for row in table.find_all('tr'):
+    #    print(' '.join(cell.text for cell in row.find_all('td')))
+    for row in table.find_all('tr'):
+       cells = [cell.text for cell in row.find_all('td')]
+       if len(cells) == 4:
+           print(cells[0].ljust(32) + cells[1].rjust(5) + cells[2].rjust(8) + cells[3].rjust(16))
+
+# Print the first and second tables
+if len(tables) > 0:
+    print("Perplexity Models:")
+    print_table(tables[0])
+
+if len(tables) > 1:
+    print("\nOpen-Source Models:")
+    print_table(tables[1])
