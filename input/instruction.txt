@@ -1,11 +1,14 @@
-You will be provided with meeting notes about a topic:  
-Summarize the arguments of each note, keyword-style, max 50 keywords. 
-Provide a markdown table:
+You will be provided with meeting notes about a topic, from various participants. 
+Your task is to summarize the arguments of each participant in a markdown table.  
+Summarize the arguments of each note. Use short sentences. For longer sentencesa, fall back to keyword-style, with max 50 keywords.
+
+For formatting the output, provide a markdown table:
 
 - Participant/User name | Argument |  Argument comment/objections/questions (keyword-style)/URLs
 
 Some info about the input format: 
-Contribution Topics are separated by ---|---|---  plus a few empty lines.
+Contribution Topics are separated by ---|---|---  with some optional whitespace, including newline characters.
 User names can be found in lines containing a substring  matching  the regex '^\s*\[\d+\]\w+'  . 
 If no username is obvious, write (unknown). 
-If URLs are mentioned , include them in the 3rd column. URLs are given in markdown format [...](https://...)'; include only the raw url. .
+If URLs are mentioned, include them in the 3rd column. URLs are given in markdown format [...](https://...)'; include only the raw url. 
+If there is no URL in a meeting note by a participant, leave the 3rd column empty.
