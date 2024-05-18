@@ -1,0 +1,6 @@
+{
+  "MD055": false, # Allow multiple headers with the same content
+  "MD056": false, # Allow unordered list items to be indented with tabs
+  "MD013": false,  # Allow line length to exceed 80 characters
+  "MD032": false,  # Blank lines around list items
+}

@@ -105,7 +105,7 @@ def chunk_data(chunks, instruction):
         chunks_data.append(set_data(config['model'], chunk, instruction))
     print(f"Number of data chunks: {len(chunks_data)}", file=sys.stderr)
     return chunks_data
-    
+
 def set_data(model, chunk, instruction, max_tokens=1024):
     '''perplexity sonar models require freq_penalty > 0'''
     if config['model'] != 'gpt-3.5-turbo-16k':
@@ -137,7 +137,7 @@ def set_data(model, chunk, instruction, max_tokens=1024):
     }
     return json.dumps(data)
 
-def create_headers(api_key):
+def create_http_headers(api_key):
     return {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
@@ -213,7 +213,7 @@ if __name__ == "__main__":
 
     current_date = datetime.now().strftime("%Y-%m-%d")
     topic_line = f'{current_date}: {topic_line}'
-    headers = create_headers(config['api_key'])
+    headers = create_http_headers(config['api_key'])
     chunked_rawtext = chunk_text(text, chunk_size)
     chunked_data = chunk_data(chunked_rawtext, instruction)
     
