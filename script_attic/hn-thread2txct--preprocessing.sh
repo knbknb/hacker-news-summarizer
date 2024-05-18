@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# deprecated. Use hn-thread2txt2chatgpt2md.py instead
+# 
+# This Shellscript takes a Hacker News thread URL, fetches the thread as HTML, 
+# and converts it to a text file with less redundant info and fewer formatting artifacts.
+# Needs Perl and lynx installed. 
+#
+# knb 2023
 #example: ./hn-thread2txct--preprocessing.sh https://news.ycombinator.com/item?id=37156101
 hnitem=$1
 outfile=$2
