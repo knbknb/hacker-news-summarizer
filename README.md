@@ -3,11 +3,29 @@
 
 README.md
 
+## Synopsis
+
+Summarize ["HN threads "](https://news.ycombinator.com/) using OpenAI API or Perplexity API.
+
+```bash
+# calls OpenAI gpt-4o model, (requires you to have Pro Account with OpenAI)
+./HN-ThreadSummarizer.py --hnitem 39416436  --topic "Why You're Still Single" 
+
+# expected output on the console
+Read output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o--input-for-llm.txt...:  28525  chars read.
+Number of data chunks: 3
+chunk 1 of 3 posted to https://api.openai.com/v1/chat/completions, model gpt-4o, topic # HN Topic: [Why You're Still Single](https://
+...
+
+# processed, summarized output is written to a markdown file
+final_output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o.md
+```
+
 ## Description
 
 Use OpenAPI Python API to summarize (and flatten) a Hacker-News forum thread.
 
-The summary is written to a markdown file.  The markdown file is then read and printed to stdout. Use redirect to write to a file. Recommended: write into the `final_output` directory.
+The summary is written to a markdown file, into the `final_output` directory. The progress of the summarization is printed to the console.
 
 ## Run
 
@@ -26,9 +44,9 @@ You must have an account with OpenAI and have an API key.  The API key is free f
 
 Here no OPENAI_API_KEY was defined in the environment.
 
-`./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "why you're still single"  `
+`./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "why you're still single"  `
 
-The script writes to an intermediate file in subdir `output/`.  That file is then re-read, processed and printed to stdout.  This is useful for getting immediate feedback, or for debugging.
+The script writes intermediate files into subdir `output/`.  Those files are then re-read, processed. This is useful for getting immediate feedback, or for debugging.
 
 `./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
 
@@ -44,22 +62,24 @@ Works provided you have the environment variable `OPENAI_API_KEY` defined proper
 
 ```bash
 TOPIC="why you're still single"
-./hn-thread2txt2chatgpt2md.py --hnitem "39416436"  --topic "$TOPIC" 
+./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "$TOPIC" 
 ```
 
 Call Perplexity API instead (provided you have an API key for it)
 
 ```bash
 TOPIC="why you're still single"
- ./hn-thread2txt2chatgpt2md.py --hnitem "39416436" --api_key $PERPLEXITY_API_KEY --model mistral-7b-instruct   --topic "$TOPIC"  --url "https://api.perplexity.ai/chat/completions"
+# 3 more arguments are needed: --model, --api_key, --url
+./HN-ThreadSummarizer.py --hnitem 39416436  --topic "Why You're Still Single" --model mixtral-8x7b-instruct  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
 ```
 
 ## TODO
 
 - [x] ~~Add requirements.txt~~
 - [x] ~~Add .env-example~~
-- [ ] Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)
-- [ ] Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking
+- [ ] Fetch correct title of HN Posting (can get updated even after a while)
+- [x] ~~Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)~~ Better prompt and model gpt-4o does a good job
+- [x] ~~Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking~~ Not needed, found workaround with better table formatting
 - [ ] Add an explanation of installation and 1 run example to an INSTALL.md or EXAMPLE.md file
 
 ### Directories created
@@ -70,6 +90,8 @@ The subdirectories are named `./data`, `./final_output`, `./input`, `./output`, 
 ### Files created
 
 Lots of .md files are created in the respective directories. Partly for caching, partly for storing intermediate files.
+
+You can delete files in the `./output` directory after the script has finished.  It is only used for intermediate files.
 
 ### Requirements
 
