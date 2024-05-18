@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 import sys
 import re
-#import subprocess
 import html2text
 from urllib.parse import urlparse
 import requests
@@ -11,7 +10,7 @@ import json
 from dotenv import load_dotenv
 import argparse
 
-# import time # for sleep(), not used yet
+# import time # for sleep(), not used yet - to avoid rate limiting
 
 # Load .env file with API keys and credentials
 load_dotenv()
@@ -149,9 +148,11 @@ def create_http_headers(api_key):
 ## LLM : ChatGPT-3.5, gpt-4o API or Perplexity supported models
 def send_to_llm(config, headers, topic, chunks, final_outfile):
     i = 1
+    current_date = datetime.now().strftime("%Y-%m-%d")
     first_response_flag = True
     with open(final_outfile, 'w') as f:
-        print(f" model {config['model']}, topic {topic}\n\n", file=f)
+        print(f"{topic}\n", file=f)
+        print(f"## Date: {current_date}. LLM: {config['model']}\n", file=f)
         for chunk in chunks:
             print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
             if not first_response_flag:
@@ -185,6 +186,7 @@ if __name__ == "__main__":
         'topic' :  args.topic
     }
     create_subdirectories()
+    
     hnitem_dict = check_hnitem(args.hnitem)
     hnitem = hnitem_dict['hnitem']
     hnitem_id = hnitem_dict['hnitem_id']
@@ -216,8 +218,6 @@ if __name__ == "__main__":
     with open(instruction_file_path, 'r') as f:
         instruction = f.read()
 
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    topic_line = f'{current_date}: {topic_line}'
     headers = create_http_headers(config['api_key'])
     chunked_rawtext = chunk_text(text, chunk_size)
     chunked_data = chunk_data(chunked_rawtext, instruction)
