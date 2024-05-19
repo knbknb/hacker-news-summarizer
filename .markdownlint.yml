@@ -3,4 +3,5 @@
   "MD056": false, # Allow unordered list items to be indented with tabs
   "MD013": false,  # Allow line length to exceed 80 characters
   "MD032": false,  # Blank lines around list items
+  "MD029": false,  # Allow ordered list items to be mixed with unordered list items
 }
