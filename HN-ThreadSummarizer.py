@@ -144,7 +144,7 @@ class LLMInteraction:
             for chunk in chunks:
                 print(f"chunk {i} of {len(chunks)} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
                 if not first_response_flag:
-                    chunk = chunk.replace('Provihttps://api.perplexity.ai/chat/completionsde a markdown table:', 'Provide a markdown table, but do not provide a table header, or remove the table header:', 1)
+                    chunk = chunk.replace('Provide a markdown table:', 'Provide a markdown table, but do not provide a table header, or remove the table header:', 1)
                 response = requests.post(url=config['url'], headers=headers, data=chunk)
                 response_json = response.json()
                 
