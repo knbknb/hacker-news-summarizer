@@ -6,9 +6,16 @@ For formatting the output, provide a markdown table:
 
 - Participant/User name | Argument |  Argument comment/objections/questions (keyword-style)/URLs
 
+If there is a "chunk_number" argument in the input, and it is 0, then include a header in the output.
+ if it is larger than 0, do not include a markdown table header.
+
 Some info about the input format: 
-Contribution Topics are separated by ---|---|---  with some optional whitespace, including newline characters.
-User names can be found in lines containing a substring  matching  the regex '^\s*\[\d+\]\w+'  . 
-If no username is obvious, write (unknown). 
-If URLs are mentioned, include them in the 3rd column. URLs are given in markdown format [...](https://...)'; include only the raw url. 
-If there is no URL in a meeting note by a participant, leave the 3rd column empty.
+Contribution Topics are separated by <author></author>:<comment></comment>  
+
+If URLs are mentioned in the comments, include them in the 3rd column.  
+Short URLS, such as those with a length of thess than 50 characters should be output as they are.
+ Longer URLs should be output in markdown format [...](https://...)' with a reasonable label/linktext [] . 
+ You can take the path fragment or if this is incomprehenesible (e.g. a random string), use the domain name.
+If there is no URL in a comment by a participant, leave the 3rd column empty.
+
+ 

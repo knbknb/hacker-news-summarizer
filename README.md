@@ -68,7 +68,7 @@ TOPIC="why you're still single"
 ./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "$TOPIC" 
 ```
 
-Call Perplexity API instead (provided you have an API key for it)
+Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it)
 
 ```bash
 TOPIC="why you're still single"
@@ -78,11 +78,11 @@ TOPIC="why you're still single"
 
 ### Recommended
 
-Also install and run Simon Willison's `llm` CLI tool. It is Python-based and can be installed with `pip install llm`. It is a great tool to get a better understanding of the OpenAI API output.
+Also install and run Simon Willison's [`llm` CLI tool](https://til.simonwillison.net/llms/claude-hacker-news-themes). It is Python-based and can be installed with `pip install llm`. It is a great tool to get a better understanding of the OpenAI API output.
 
 It works similarly to this script, but provides a more high-level view of the HN Thread output. Well-summarized comments are shown in a more readable way.
 
-A shellscript [`hn-summary-simonw.sh`}(script_attic/hn-summary-simonw.sh) wrapping the `llm` command is provided in the `script_attic` directory.
+A shellscript [`hn-summary-simonw.sh`](hn-summary-simonw.sh) wrapping the `llm` command is provided in the root directory of this repo.
 
 ### TODO
 
