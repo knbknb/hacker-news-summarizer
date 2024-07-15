@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Provide a one-page summary of a Hacker News discussion
-# by: Simon Willison
+# https://til.simonwillison.net/llms/claude-hacker-news-themes
+# by: Simon Willison, based on:
 # https://github.com/simonw/llm/, 
 # together with the llm-perplexity plugin and the llm-gemini plugin (by others)
 
@@ -24,8 +25,7 @@ curl -s "https://hn.algolia.com/api/v1/items/$id" | \
   jq -r 'recurse(.children[]) | .author + ": " + .text' | \
   llm -m "$model" 'Summarize the themes of the opinions expressed here.
   Write a short paragraph with details about each theme of the discussion.
-  For each theme, output a markdown header.
-  Include direct "quotations" (with author attribution) where appropriate.
+  For each theme, output a markdown header and include up to 3 direct "quotations" (with author attribution) where appropriate.
   You MUST quote directly from users when crediting them, with double quotes.
   Fix HTML entities. Output markdown. Go long.'
 #  llm -m gemini-pro 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'

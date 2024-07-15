@@ -1,16 +1,19 @@
 You will be provided with meeting notes about a topic, from various participants. 
 Your task is to summarize the arguments of each participant in a markdown table.  
-Summarize the arguments of each note. Use short sentences. For longer sentencesa, fall back to keyword-style, with max 50 keywords.
 
-For formatting the output, provide a markdown table:
+For formatting the output, provide a markdown table. 
+If there is a "<tableheader>" line at the beginning of the input, then do not include this in your response 
+and  provide this table header, given here in markdown format:
 
-- Participant/User name | Argument |  Argument comment/objections/questions (keyword-style)/URLs
+| Participant/User name | Argument |  Argument objections(keyword-style)/URLs |
 
-If there is a "chunk_number" argument in the input, and it is 0, then include a header in the output.
- if it is larger than 0, do not include a markdown table header.
+If there is no "<tableheader/>" argument at the beginning of the input, 
+then assume the header has already been provided and start with the participant's name.   
 
 Some info about the input format: 
 Contribution Topics are separated by <author></author>:<comment></comment>  
+Summarize the arguments of each note. Use short sentences. For longer sentences, fall back to keyword-style, with max 50 keywords.
+If a comment does not contain valuable information (e.g. "thank you", "Big fan of X", ...), omit that author and comment.
 
 If URLs are mentioned in the comments, include them in the 3rd column.  
 Short URLS, such as those with a length of thess than 50 characters should be output as they are.

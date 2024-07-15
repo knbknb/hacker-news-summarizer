@@ -53,6 +53,7 @@ class Utilities:
         comments = extract_comments(data)
         
         with open(intermediate_file, 'w') as f:
+            f.write('<tableheader/>' + "\n")
             for comment in comments:
                 f.write(comment + "\n")
 
@@ -120,7 +121,6 @@ class LLMInteraction:
             for chunk in chunks:
                 chunk_num = f'chunk_num {i} of {len(chunks)}'
                 print(f"{chunk_num} posted to {config['url']}, model {config['model']}, topic {topic}", file=sys.stderr)
-                chunk = f'{chunk_num}:  {chunk}'
                 response = requests.post(url=config['url'], headers=headers, data=chunk)
                 response_json = response.json()
                 
