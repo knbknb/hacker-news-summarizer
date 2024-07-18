@@ -10,6 +10,13 @@ if [[ ! $1 =~ ^[0-9]+$ ]]; then
   echo "Please provide a valid integer as the first argument."
   exit 1
 fi
+# add a check that tests for cli tool llm being installed 
+if ! command -v llm &> /dev/null
+then
+    echo "'llm' cli tool could not be found, please install it with 'pip install llm'."
+    echo "See https://llm.datasette.io/en/stable/"
+    exit
+fi
 
 id="$1"
 
