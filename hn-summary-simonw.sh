@@ -25,9 +25,9 @@ curl -s "https://hn.algolia.com/api/v1/items/$id" | \
   jq -r 'recurse(.children[]) | .author + ": " + .text' | \
   llm -m "$model" 'Summarize the themes of the opinions expressed here.
   Write a short paragraph with details about each theme of the discussion.
-  For each theme, output a markdown header and include up to 3 direct "quotations" (with author attribution) where appropriate.
+  For each theme t, pick a number n(t) randomly from the set 0,1,2,3, and then  include n(t) direct "quotations" (with author attribution) where appropriate.
   You MUST quote directly from users when crediting them, with double quotes.
-  Fix HTML entities. Output markdown. Go long.'
+  Tramslate HTML entities to their equivalent unicode characters if possible. Output markdown. Go long.'
 #  llm -m gemini-pro 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'
 #  llm -m mixtral-8x7b-instruct 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'
 #  llm -m llama-3-70b-instruct 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'

@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD001 -->
 # Hacker-News thread summarizer
 
-README.md
+USAGE.md
 
 ## Synopsis
 

@@ -8,17 +8,17 @@ and  provide this table header, given here in markdown format:
 | Participant/User name | Argument |  Argument objections(keyword-style)/URLs |
 
 If there is no "<tableheader/>" argument at the beginning of the input, 
-then assume the header has already been provided and start with the participant's name.   
+then assume the header has already been provided and do not add a markdown table header. Just start with the participant's name.   
 
 Some info about the input format: 
 Contribution Topics are separated by <author></author>:<comment></comment>  
 Summarize the arguments of each note. Use short sentences. For longer sentences, fall back to keyword-style, with max 50 keywords.
-If a comment does not contain valuable information (e.g. "thank you", "Big fan of X", ...), omit that author and comment.
+If a comment is quite short and/or does not contain valuable information (e.g. "thank you", "Big fan of X", ...), omit that author and comment.
 
 If URLs are mentioned in the comments, include them in the 3rd column.  
-Short URLS, such as those with a length of thess than 50 characters should be output as they are.
- Longer URLs should be output in markdown format [...](https://...)' with a reasonable label/linktext [] . 
- You can take the path fragment or if this is incomprehenesible (e.g. a random string), use the domain name.
-If there is no URL in a comment by a participant, leave the 3rd column empty.
+Short URLS, such as those with a length of thess than 50 characters, or those URLs that point to URL shorteners, should be output as they are.
+Longer URLs should be output in markdown format [...](https://...)' with a reasonable label/linktext [] . 
+You can take the path fragment or if this is incomprehenesible (e.g. a random string), use the domain name.
+If there is no URL in a comment by a participant, leave the 3rd column empty. 
 
  
