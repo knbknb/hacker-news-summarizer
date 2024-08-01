@@ -46,7 +46,7 @@ You must have an account with OpenAI and have an API key.  OpenAI API access was
 
 Here no OPENAI_API_KEY was defined in the environment.
 
-`./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "why you're still single"  `
+`./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "why you're still single"`
 
 The script writes intermediate files into subdir `output/`.  Those files are then re-read, processed by the script.  
 This is useful for getting immediate feedback, or for debugging.
@@ -72,8 +72,20 @@ Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (prov
 
 ```bash
 TOPIC="why you're still single"
+PERPLEXITY_API_KEY="pplx-1de8a...."
 # 3 more arguments are needed: --model, --api_key, --url
-./HN-ThreadSummarizer.py --hnitem 39416436  --topic "Why You're Still Single" --model mixtral-8x7b-instruct  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model mixtral-8x7b-instruct  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+
+For Perplexity API, try these values for the `--model` argument:
+
+```text
+llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer
+llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer
+mixtral-8x7b-instruct   # good quality
+
+llama-3-8b-instruct
+llama-3-70b-instruct
+
 ```
 
 ### Recommended
