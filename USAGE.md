@@ -12,9 +12,9 @@ Summarize ["HN threads "](https://news.ycombinator.com/) using OpenAI API or Per
 ./HN-ThreadSummarizer.py --hnitem 39416436  --topic "Why You're Still Single" 
 
 # expected output on the console
-Read output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o--input-for-llm.txt...:  28525  chars read.
-Number of data chunks: 3
-chunk 1 of 3 posted to https://api.openai.com/v1/chat/completions, model gpt-4o, topic # HN Topic: [Why You're Still Single](https://
+# Read output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o--input-for-llm.txt...:  28525  chars read.
+# Number of data chunks: 3
+# chunk 1 of 3 posted to https://api.openai.com/v1/chat/completions, model gpt-4o, topic # HN Topic: [Why You're Still Single](https://
 ...
 
 # processed, summarized output is written to a markdown file
@@ -57,12 +57,19 @@ The script writes intermediate files into subdir `output/`.  Those files are the
 This is useful for getting immediate feedback, or for debugging.
 
 ```bash
-`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
+`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  \
+  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
 ```
 
-Assume no OPENAI_API_KEY was pre-defined in the environment. Hence the OPENAI_API_KEY needs to passed as a command-line argument.  
+Note:
 
-After summarizing, you it recommended to fine-tune the `.md` output file to your needs, by hand. That file might have a few formatting glitches. The script does not fix those for you.
+- Assume no OPENAI_API_KEY was pre-defined in the environment. Hence the OPENAI_API_KEY needs to be passed as a command-line argument.  
+- You can also pass in the complete URL of the HN thread, as an argument to the script. (instead of just the thread id)
+
+After summarizing, fine-tune the `.md` output file to your needs, by hand. That file will probably have a few formatting glitches. The script does not fix those for you.
+
+- IDEA: re-post the summarized comments back to the API, to clean up the markdown file.  
+  (Leverage the ["Self-refine"](https://selfrefine.info/) pattern of LLM usage.)
 
 But during fixing you start to read the summarized comments and get a better understanding of the HN thread.
 
@@ -108,10 +115,12 @@ Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`
 
 - [x] ~~Add requirements.txt~~
 - [x] ~~Add .env-example~~
-- [ ] Fetch correct title of HN Posting (can get updated by HN Moderators, even after days)
 - [x] ~~Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)~~ Better prompt and model gpt-4o does a good job
 - [x] ~~Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking~~ Not needed, found workaround with better table formatting
 - [x] ~~Add an explanation of installation and 1 run example to an USAGE.md or EXAMPLE-OUTPUT.md file~~
+- [ ] Experiment with various API parameters (chunk size, model, temperature, custom instructions etc.)
+- [ ] Add an analysis and comparison of the model outputs
+- [ ] (misc) Fetch correct title of HN Posting (can get updated by HN Moderators, even after days)
 
 ### Directories created
 
