@@ -40,20 +40,27 @@ You must have an account with OpenAI and have an API key.  OpenAI API access was
 
 (To use the OpenAI API, users now need to add a payment method and purchase credits . The minimum amount to start using the API is typically \$5.00.)
 
-#### Example
+#### Example runs
+
+(See also [EXAMPLE-OUTPUT.md](EXAMPLE-OUTPUT.md))
 
 ##### This writes to a file
 
-Here no OPENAI_API_KEY was defined in the environment.
+Here an OPENAI_API_KEY _was_ defined before, as a shell command, such that a valid environment variable exists for the script to use.
+
+```bash
 
 `./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "why you're still single"`
+```
 
 The script writes intermediate files into subdir `output/`.  Those files are then re-read, processed by the script.  
 This is useful for getting immediate feedback, or for debugging.
 
+```bash
 `./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
+```
 
-Here no OPENAI_API_KEY is pre-defined in the environment. Hence the OPENAI_API_KEY needs to passed as a command-line argument.  
+Assume no OPENAI_API_KEY was pre-defined in the environment. Hence the OPENAI_API_KEY needs to passed as a command-line argument.  
 
 After summarizing, you it recommended to fine-tune the `.md` output file to your needs, by hand. That file might have a few formatting glitches. The script does not fix those for you.
 
@@ -64,15 +71,16 @@ But during fixing you start to read the summarized comments and get a better und
 Works provided you have the environment variable `OPENAI_API_KEY` defined properly.
 
 ```bash
-TOPIC="why you're still single"
+OPENAI_API_KEY=sk-0...           # your OpenAI API key, for better results
+TOPIC="why you're still single"  # filename slug
 ./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "$TOPIC" 
 ```
 
-Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it) - for checking out the differences in summarization quality between OpenAI and the models offered by Perplexity.
+Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it) - for experimenting, e.g. checking out the differences in summarization quality between OpenAI endpoints, and the APIs/model endpoints offered by Perplexity.
 
 ```bash
 TOPIC="why you're still single"
-PERPLEXITY_API_KEY="pplx-1de8a...."
+PERPLEXITY_API_KEY=pplx-1d...    # alternative API key, for experimenting
 # 3 more arguments are needed: --model, --api_key, --url
 ./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model mixtral-8x7b-instruct  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
 
@@ -81,11 +89,11 @@ For Perplexity API, try these values for the `--model` argument:
 ```text
 llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer
 llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer
-mixtral-8x7b-instruct   # good quality
+mixtral-8x7b-instruct   # good quality with small chunks
 
 llama-3-8b-instruct
 llama-3-70b-instruct
-
+# and more ... change the model to experiment. 
 ```
 
 ### Recommended
@@ -96,7 +104,6 @@ A shellscript [`hn-summary-simonw.sh`](hn-summary-simonw.sh) wrapping the `llm` 
 
 Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`, but provides a much more compact view of the HN Thread output. Well-summarized _conversation themes_ are returned in a more readable way.
 
-
 ### TODO
 
 - [x] ~~Add requirements.txt~~
@@ -104,7 +111,7 @@ Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`
 - [ ] Fetch correct title of HN Posting (can get updated by HN Moderators, even after days)
 - [x] ~~Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)~~ Better prompt and model gpt-4o does a good job
 - [x] ~~Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking~~ Not needed, found workaround with better table formatting
-- [ ] Add an explanation of installation and 1 run example to an INSTALL.md or EXAMPLE.md file
+- [x] ~~Add an explanation of installation and 1 run example to an USAGE.md or EXAMPLE-OUTPUT.md file~~
 
 ### Directories created
 
