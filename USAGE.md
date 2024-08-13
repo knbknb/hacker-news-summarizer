@@ -15,7 +15,7 @@ Summarize ["HN threads "](https://news.ycombinator.com/) using OpenAI API or Per
 # Read output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o--input-for-llm.txt...:  28525  chars read.
 # Number of data chunks: 3
 # chunk 1 of 3 posted to https://api.openai.com/v1/chat/completions, model gpt-4o, topic # HN Topic: [Why You're Still Single](https://
-...
+#...
 
 # processed, summarized output is written to a markdown file
 final_output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o.md
@@ -68,9 +68,6 @@ Note:
 
 After summarizing, fine-tune the `.md` output file to your needs, by hand. That file will probably have a few formatting glitches. The script does not fix those for you.
 
-- IDEA: re-post the summarized comments back to the API, to clean up the markdown file.  
-  (Leverage the ["Self-refine"](https://selfrefine.info/) pattern of LLM usage.)
-
 But during fixing you start to read the summarized comments and get a better understanding of the HN thread.
 
 ##### This is the shortest version
@@ -120,7 +117,9 @@ Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`
 - [x] ~~Add an explanation of installation and 1 run example to an USAGE.md or EXAMPLE-OUTPUT.md file~~
 - [ ] Experiment with various API parameters (chunk size, model, temperature, custom instructions etc.)
 - [ ] Add an analysis and comparison of the model outputs
-- [ ] (misc) Fetch correct title of HN Posting (can get updated by HN Moderators, even after days)
+- [ ] (misc) Fetch correct title of HN Posting (can get updated by HN Moderators, even after days), and use that title as a better "slug" for the output file
+- [ ] (idea): re-post the summarized comments back to the API, to clean up the markdown file.  
+  (Leverage the ["Self-refine"](https://selfrefine.info/) pattern of LLM usage.)
 
 ### Directories created
 
