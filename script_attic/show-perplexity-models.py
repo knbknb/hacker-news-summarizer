@@ -29,11 +29,14 @@ def print_table(table):
        if len(cells) == 4:
            print(cells[0].ljust(33) + cells[1].rjust(6) + cells[2].rjust(8) + cells[3].rjust(16))
 i = 0
-
+print("")
 for t in tables:
-  print(t)
+  print(f"#####  {i+1}: {t}")
   print_table(tables[t])
   # Print the first and second tables
   if t == 'perplexity-sonar-models':
-    print("Note: 'online' LLMs do not attend to the system prompt given in 'instruction.txt'")
+    print("Note: 'online' LLMs do not attend to the system prompt given in 'instruction.txt'.")
+    print("You can use the system prompt to provide instructions related to style, tone, and language of the response")
+    print("")
   print("")
+  i += 1

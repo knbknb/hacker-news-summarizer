@@ -137,7 +137,7 @@ class Main:
         parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
         parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
                             required=False, default=os.getenv("OPENAI_API_KEY"))
-        parser.add_argument('--model',   help='Model to use for the LLM, e.g. "mistral-7b-instruct"', default='gpt-4o')
+        parser.add_argument('--model',   help='Model to use for the LLM, e.g. "gpt-4o", "mistral-7b-instruct"', default='gpt-4o')
         parser.add_argument('--url',     help='URL for the LLM API, e.g. https://api.perplexity.ai/chat/completions',      default='https://api.openai.com/v1/chat/completions')
         
         args = parser.parse_args()

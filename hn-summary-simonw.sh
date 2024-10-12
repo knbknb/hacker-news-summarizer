@@ -7,7 +7,7 @@
 
 # Validate that the first argument is an integer
 if [[ ! $1 =~ ^[0-9]+$ ]]; then
-  echo "Please provide a valid integer as the first argument."
+  echo "Please provide a valid integer  (the HN thread number) as the first argument."
   exit 1
 fi
 # add a check that tests for cli tool llm being installed 
