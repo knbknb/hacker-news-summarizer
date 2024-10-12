@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # Provide one-by-one summaries of relevant posts from Hacker News discussion
-# Using local HN-ThreadSummarizer.py script, calling OpenAI 'gpt-4o' model.
+# Using local HN-ThreadSummarizer.py script, calling Perplexity's models at their API.
 # by Knut Behrends, Oct 2024
 
-# This script does not load any API keys or secrets. 
-# ./HN-ThreadSummarizer.py does load those from .env file.
+# This script loads the PERPLEXITY API keys from .env file 
 
 # Most of this script is Error checking: arguments, the existence of the script, the default topic, network issues
 # The actual call to the Python script is at the end.
@@ -16,14 +15,21 @@ fi
 
 HN_SCRIPTS_PATH=$(pwd)
 HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
-DEFAULT_MODEL="gpt-4o"
-
+DEFAULT_MODEL="llama-3.1-sonar-huge-128k-online" # llama3.1-405b-instruct
+# All models, Okt. 2024:
+MODELS="llama-3.1-sonar-small-128k-online llama-3.1-sonar-large-128k-online llama-3.1-sonar-huge-128k-online \
+llama-3.1-sonar-small-128k-chat  llama-3.1-sonar-large-128k-chat  \
+llama-3.1-8b-instruct llama-3.1-70b-instruct"
+# reliable models for text summarization:
+MODELS="llama-3.1-8b-instruct llama-3.1-sonar-small-128k-chat"
 if [[ ! -f "$HN_SCRIPT_NAME" ]];
 then
     echo "'$HN_SCRIPT_NAME' script could not be found."
     echo " I've looked in the current directory,"
     echo "      '$HN_SCRIPTS_PATH'"
     echo "call: ./HN-ThreadSummarizer.py --hnitem "$1" --model "$DEFAULT_MODEL" --topic "$topic""
+    echo "For Alternative models: (besides 'gpt-4o')"
+    echo "call: ./script_attic/show-perplexity-models.py"
     exit
 fi
 
@@ -50,12 +56,33 @@ if [ -z "$2" ]; then
 else
     topic="$2"
 fi
-# Run the HN-ThreadSummarizer.py script
-./HN-ThreadSummarizer.py --hnitem "$1" --model "$DEFAULT_MODEL" --topic "$topic"
-# --url "https://api.perplexity.ai/chat/completions"
+
+# HN-ThreadSummarizer.py script defaults to OPENAI API, so here we override it:
+PERP_URL="https://api.perplexity.ai/chat/completions"
+PERP_KEY=$(grep PERPLEXITY_API_KEY .env | cut -d '=' -f 2)
+
+# Iterate over each model and run the script
+for model in $MODELS; do
+    echo ""
+    echo "####################  Running Perplexity model: '$model'"
+    ./HN-ThreadSummarizer.py --hnitem "$1" --model "$model" --topic "$topic" \
+      --url "$PERP_URL" --key "$PERP_KEY"
+done
+echo "run: "
+cat <<'EOT'
+## delete empty lines in the output file:
+perl -ni -e 'print unless /^\s*$/' final_output/outfile
+sed -i '/^\s*$/d' final_output/outfile
+
+# add a table header:
+perl  -pi -e 'if ($. < 10 && /^.+URLs\s+\|/){ $_ .= "\|------\|-------\|--------\|\n";$_ = "\n" . $_}' final_output/outfile 
+
+# best display outfiles with glow or bat:
+< final_output/outfile bat -l markdown
+< final_output/outfile glow
+EOT
 
 # At the end, run this script to show alternative models:
-echo ""
-echo "# ---------------------------------"
-echo "# Alternative models, besides 'gpt-4o', '4o': (Also run 'llm plugin' to check versions)"
-llm models
+#echo ""
+#echo "Alternative models: (besides '$DEFAULT_MODEL')"
+#./script_attic/show-perplexity-models.py

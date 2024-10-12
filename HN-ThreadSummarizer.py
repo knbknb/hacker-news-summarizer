@@ -135,14 +135,14 @@ class Main:
         parser = argparse.ArgumentParser(description='Process Hacker News threads.')
         parser.add_argument('--hnitem',  help='Hacker News item URL, or id, e.g. 39577113', required=True)
         parser.add_argument('--topic',   help='Topic of the discussion',  default="Hacker news thread")
-        parser.add_argument('--api_key', help='OPENAI_API_KEY. Put it in .env or set it on command line', 
+        parser.add_argument('--key',     help='OPENAI_API_KEY or PERPLEXITY_API_KEY. Put it in .env or set it on command line', 
                             required=False, default=os.getenv("OPENAI_API_KEY"))
         parser.add_argument('--model',   help='Model to use for the LLM, e.g. "gpt-4o", "mistral-7b-instruct"', default='gpt-4o')
         parser.add_argument('--url',     help='URL for the LLM API, e.g. https://api.perplexity.ai/chat/completions',      default='https://api.openai.com/v1/chat/completions')
         
         args = parser.parse_args()
         self.config = {
-            'api_key': args.api_key,
+            'api_key': args.key,
             'model':   args.model,
             'url':     args.url,
             'hnitem':  args.hnitem,
@@ -161,7 +161,7 @@ class Main:
         
         intermediate_file = os.path.join("output", f"{topic_cleaned}-{self.config['model']}.txt")
         final_outfile = os.path.join("final_output", f"{topic_cleaned}-{self.config['model']}.md")
-        max_tokens = 4000
+        max_tokens = 5000
         chunk_size = int(max_tokens * 2.5)
 
         if not os.path.isfile(intermediate_file):
