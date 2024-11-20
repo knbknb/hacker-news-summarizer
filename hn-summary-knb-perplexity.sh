@@ -7,6 +7,7 @@
 
 # Most of this script is Error checking: arguments, the existence of the script, the default topic, network issues
 # The actual call to the Python script is at the end.
+# results returned are almost unreadable. Calling the Perplexity API needs to be called in a different manner. 
 
 if [[ ! $1 =~ ^[0-9]+$ ]]; then
   echo "Please provide a valid integer (the HN thread number) as the first argument."
@@ -22,7 +23,7 @@ llama-3.1-sonar-small-128k-chat  llama-3.1-sonar-large-128k-chat  \
 llama-3.1-8b-instruct llama-3.1-70b-instruct"
 # reliable models for text summarization:
 #MODELS="llama-3.1-8b-instruct llama-3.1-sonar-small-128k-chat"
-MODELS=" llama-3.1-sonar-large-128k-online"
+MODELS="llama-3.1-70b-instruct"
 if [[ ! -f "$HN_SCRIPT_NAME" ]];
 then
     echo "'$HN_SCRIPT_NAME' script could not be found."

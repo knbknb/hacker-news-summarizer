@@ -16,7 +16,7 @@ fi
 
 HN_SCRIPTS_PATH=$(pwd)
 HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
-DEFAULT_MODEL="gpt-4o"
+DEFAULT_MODEL="gpt-4o-mini"
 
 if [[ ! -f "$HN_SCRIPT_NAME" ]];
 then
@@ -57,5 +57,7 @@ fi
 # At the end, run this script to show alternative models:
 echo ""
 echo "# ---------------------------------"
-echo "# Alternative models, besides 'gpt-4o', '4o': (Also run 'llm plugin' to check versions)"
+echo "# Alternative models, besides 'gpt-4o', '4o': (Also run 'llm plugins | jq .[].name' to check versions)"
 llm models
+echo "# ---------------------------------"
+echo "# (Also run 'llm plugins | jq .[].name' to check llm plugin availability), and check keys with 'llm keys'"
