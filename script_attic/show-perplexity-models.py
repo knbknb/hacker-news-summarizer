@@ -3,23 +3,13 @@ import requests
 from bs4 import BeautifulSoup
 
 # Fetch the HTML
-#response = requests.get('https://docs.perplexity.ai/docs/model-cards')
 response = requests.get('https://docs.perplexity.ai/guides/model-cards')
 
 # Parse the HTML
 soup = BeautifulSoup(response.text, 'html.parser')
 
-# Find the tables by their preceding h2 IDs
-h2_ids = ['perplexity-sonar-models', 'perplexity-chat-models', 'open-source-models']
-
-tables = {}
-for h2_id in h2_ids:
-  h2_tag = soup.find('h2', {'id': h2_id})
-  if h2_tag:
-    # Find the next sibling table
-    table_tag = h2_tag.find_next_sibling('table')
-    if table_tag:
-      tables[h2_id] = table_tag
+# Find the first and second tables
+tables = soup.find_all('table')
 
 # Function to print table rows as text, formatted as a table (lpad, rpad)
 def print_table(table):
@@ -27,16 +17,14 @@ def print_table(table):
        cells = [cell.text for cell in row.find_all('td')]
        #    print(' '.join(cell.text for cell in row.find_all('td')))        # simpler version
        if len(cells) == 4:
-           print(cells[0].ljust(33) + cells[1].rjust(6) + cells[2].rjust(8) + cells[3].rjust(16))
-i = 0
-print("")
-for t in tables:
-  print(f"#####  {i+1}: {t}")
-  print_table(tables[t])
-  # Print the first and second tables
-  if t == 'perplexity-sonar-models':
-    print("Note: 'online' LLMs do not attend to the system prompt given in 'instruction.txt'.")
-    print("You can use the system prompt to provide instructions related to style, tone, and language of the response")
-    print("")
-  print("")
-  i += 1
+           print(cells[0].ljust(32) + cells[1].rjust(5) + cells[2].rjust(8) + cells[3].rjust(16))
+
+# Print the first and second tables
+if len(tables) > 0:
+    print("Perplexity Models:")
+    print_table(tables[0])
+    print("Note: 'online' LLMs do not attend to the system prompt given in 'instruction.txt'")
+
+if len(tables) > 1:
+    print("\nOpen-Source Models:")
+    print_table(tables[1])
