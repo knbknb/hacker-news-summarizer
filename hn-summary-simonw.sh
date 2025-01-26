@@ -7,7 +7,7 @@
 
 # Validate that the first argument is an integer
 if [[ ! $1 =~ ^[0-9]+$ ]]; then
-  echo "Please provide a valid integer  (the HN thread number) as the first argument."
+  echo "Please provide a valid integer  (the HN thread number) as the first argument, and optionally <modelname> as 2nd arg."
   exit 1
 fi
 # add a check that tests for cli tool llm being installed 
@@ -26,15 +26,19 @@ if [[ -z $2 ]]; then
   set -- "$1" "gemini-pro"
 fi
 model=$2
-echo using $model
-# Make API call, parse and summarize the discussion
+curl -s "https://hn.algolia.com/api/v1/search?tags=story_$id" | \
+  jq -cr " .hits[0]._highlightResult | [ \"###\",  .title.value, .url.value] | join(\" \")"
+echo ""
+echo "using $model to summarize HN thread $id"
+echo ""
+echo "----------"
+# Make API call to external site hn.algolia.com, parse and summarize the discussion
 curl -s "https://hn.algolia.com/api/v1/items/$id" | \
   jq -r 'recurse(.children[]) | .author + ": " + .text' | \
-  llm -m "$model" 'Summarize the themes of the opinions expressed here.
-  Write a short paragraph with details about each theme of the discussion.
+  llm --no-stream -m "$model" 'Summarize the themes of the opinions expressed here.
+  Start with a header that suggests a title for the summarized thread. Add "(suggested)" to that title.  
+  Write a short paragraph with details about each theme of the discussion.  
   For each theme t, pick a number n(t) randomly from the set 0,1,2,3, and then  include n(t) direct "quotations" (with author attribution) where appropriate.
   You MUST quote directly from users when crediting them, with double quotes.
-  Tramslate HTML entities to their equivalent unicode characters if possible. Output markdown. Go long.'
+  Tramslate HTML entities to their equivalent unicode characters if possible. Output markdown.'
 #  llm -m gemini-pro 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'
-#  llm -m mixtral-8x7b-instruct 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'
-#  llm -m llama-3-70b-instruct 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'

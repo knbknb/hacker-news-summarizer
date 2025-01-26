@@ -16,14 +16,12 @@ fi
 
 HN_SCRIPTS_PATH=$(pwd)
 HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
-DEFAULT_MODEL="llama-3.1-sonar-huge-128k-online" # llama3.1-405b-instruct
+DEFAULT_MODEL="sonar-pro" # 
+MODELS="sonar  sonar-pro"
 # All models, Okt. 2024:
-MODELS="llama-3.1-sonar-small-128k-online llama-3.1-sonar-large-128k-online llama-3.1-sonar-huge-128k-online \
-llama-3.1-sonar-small-128k-chat  llama-3.1-sonar-large-128k-chat  \
-llama-3.1-8b-instruct llama-3.1-70b-instruct"
-# reliable models for text summarization:
-#MODELS="llama-3.1-8b-instruct llama-3.1-sonar-small-128k-chat"
-MODELS="llama-3.1-70b-instruct"
+#MODELS="llama-3.1-sonar-small-128k-online llama-3.1-sonar-large-128k-online llama-3.1-sonar-huge-128k-online \
+#llama-3.1-sonar-small-128k-chat  llama-3.1-sonar-large-128k-chat  \
+#llama-3.1-8b-instruct llama-3.1-70b-instruct"
 if [[ ! -f "$HN_SCRIPT_NAME" ]];
 then
     echo "'$HN_SCRIPT_NAME' script could not be found."

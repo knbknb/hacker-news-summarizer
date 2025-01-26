@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Provide one-by-one summaries of relevant posts from Hacker News discussion
-# Using local HN-ThreadSummarizer.py script, calling OpenAI 'gpt-4o' model.
+# Using local HN-ThreadSummarizer.py script, calling OpenAI 'gpt-4o-mini' model.
 # by Knut Behrends, Oct 2024
 
 # This script does not load any API keys or secrets. 
