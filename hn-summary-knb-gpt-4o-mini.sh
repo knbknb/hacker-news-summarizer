@@ -57,7 +57,7 @@ fi
 # At the end, run this script to show alternative models:
 echo ""
 echo "# ---------------------------------"
-echo "# Alternative models, besides 'gpt-4o', '4o': (Also run 'llm plugins | jq .[].name' to check versions)"
+echo "# Alternative models, besides 'gpt-4o', '4o': (First run 'llm models to list names of available models)"
 llm models
 echo "# ---------------------------------"
-echo "# (Also run 'llm plugins | jq .[].name' to check llm plugin availability), and check keys with 'llm keys'"
+echo "# (Also run 'llm plugins | jq .[].name' to list installed llm plugins), and check keys with 'llm keys'"

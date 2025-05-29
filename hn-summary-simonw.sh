@@ -23,7 +23,7 @@ id="$1"
 # Parse the optional -m argument. 
 # If not provided, use the default model to gemini-pro (has largest context window)
 if [[ -z $2 ]]; then
-  set -- "$1" "gemini-pro"
+  set -- "$1" "gemini-2.0-flash-lite"
 fi
 model=$2
 curl -s "https://hn.algolia.com/api/v1/search?tags=story_$id" | \
@@ -36,9 +36,9 @@ echo "----------"
 curl -s "https://hn.algolia.com/api/v1/items/$id" | \
   jq -r 'recurse(.children[]) | .author + ": " + .text' | \
   llm --no-stream -m "$model" 'Summarize the themes of the opinions expressed here.
-  Start with a header that suggests a title for the summarized thread. Add "(suggested)" to that title.  
+  Start with a header that suggests a title for the summarized thread. Add "(suggested title)" to that title.  
   Write a short paragraph with details about each theme of the discussion.  
   For each theme t, pick a number n(t) randomly from the set 0,1,2,3, and then  include n(t) direct "quotations" (with author attribution) where appropriate.
   You MUST quote directly from users when crediting them, with double quotes.
-  Tramslate HTML entities to their equivalent unicode characters if possible. Output markdown.'
+  Translate HTML entities to their equivalent unicode characters if possible. Output markdown.'
 #  llm -m gemini-pro 'Summarize the themes of the opinions expressed here, including quotes where appropriate.'

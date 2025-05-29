@@ -5,7 +5,7 @@ README.md
 
 ## Synopsis
 
-Summarize ["Hacker News"](https://news.ycombinator.com/) (HN) comment threads using OpenAI API
+Summarize ["Hacker News"](https://news.ycombinator.com/) (HN) comment threads using LLM APIs
 
 ```bash
 # calls OpenAI gpt-4o model, (requires you to have Pro Account with OpenAI)
@@ -19,7 +19,7 @@ final_output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436
 
 ## Description
 
-Use OpenAPI Python API to summarize (and flatten) a Hacker-News forum thread.
+Use LLM Python APIs (e.g. OpenAI) to summarize (and flatten) a Hacker-News forum thread.
 
 The summary is written to a markdown file, into the `final_output` directory. The progress of the summarization is printed to the console.
 
