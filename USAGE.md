@@ -87,6 +87,7 @@ TOPIC="why you're still single"
 PERPLEXITY_API_KEY=pplx-1d...    # alternative API key, for experimenting
 # 3 more arguments are needed: --model, --api_key, --url
 ./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model sonar  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+```
 
 For Perplexity API, try these values for the `--model` argument:
 
@@ -101,12 +102,12 @@ r1-1776                      128k   Chat Completion
 
 ##### Previous models were:
 
-~~llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer~~
-~~llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer~~
-~~mixtral-8x7b-instruct   # good quality with small chunks~~
+~~llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer~~  
+~~llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer~~  
+~~mixtral-8x7b-instruct   # good quality with small chunks~~  
 
-~~llama-3-8b-instruct~~
-~~llama-3-70b-instruct~~
+~~llama-3-8b-instruct~~  
+~~llama-3-70b-instruct~~  
 
 ... and more ... change the model to experiment.
 
@@ -118,7 +119,7 @@ Also install and run Simon Willison's great [`llm` CLI tool](https://llm.dataset
 
 A shellscript [`hn-summary-simonw.sh`](hn-summary-simonw.sh) wrapping the `llm` command is provided in the root directory of this repo.
 
-Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`, but provides a much more compact view of the HN Thread output. Well-summarized _conversation themes_ are returned in a more readable way.
+Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`, but provides a much more compact view of the HN Thread output.  `llm` tries to find high-level _conversation themes_ and summarizes postings in a readable way.
 
 ##### Hackerstrat Custom GPT
 
