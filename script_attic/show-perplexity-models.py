@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Fetch the HTML
-response = requests.get('https://docs.perplexity.ai/guides/model-cards')
+response = requests.get('https://docs.perplexity.ai/models/model-cards')
 
 # Parse the HTML
 soup = BeautifulSoup(response.text, 'html.parser')

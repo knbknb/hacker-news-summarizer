@@ -8,7 +8,7 @@ USAGE.md
 Summarize ["HN threads"](https://news.ycombinator.com/) using the OpenAI API or Perplexity API.
 
 ```bash
-# Calls the OpenAI gpt-4o model (requires you to have a Pro Account with OpenAI)
+# Calls the OpenAI gpt-4o-mini model (requires you to have an Account with OpenAI)
 ./HN-ThreadSummarizer.py--hnitem 39416436 --topic "Why You're Still Single"
 
 # Expected output on the console
@@ -38,7 +38,7 @@ OPENAI_API_KEY="your_api_key"
 
 You must have an account with OpenAI and have an API key.  OpenAI API access was free for a limited number of requests previously, by that seems to have been discontinued.
 
-(To use the OpenAI API, users now need to add a payment method and purchase credits . The minimum amount to start using the API is typically \$5.00.)
+(To use the OpenAI API, users now need to add a payment method and purchase credits . The minimum amount to start using the API was once \$5.00, but that may have changed. Check the [OpenAI platform page](https://platform.openai.com/) for current details.)
 
 #### Example runs
 
@@ -80,33 +80,49 @@ TOPIC="why you're still single"  # filename slug
 ./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "$TOPIC" 
 ```
 
-Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it) - for experimenting, e.g. checking out the differences in summarization quality between OpenAI endpoints, and the APIs/model endpoints offered by Perplexity.
+Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it) - for experimenting, e.g. checking out the differences in summarization quality between the APIs/model endpoints offered by Perplexity.
 
 ```bash
 TOPIC="why you're still single"
 PERPLEXITY_API_KEY=pplx-1d...    # alternative API key, for experimenting
 # 3 more arguments are needed: --model, --api_key, --url
-./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model mixtral-8x7b-instruct  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model sonar  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
 
 For Perplexity API, try these values for the `--model` argument:
 
 ```text
-llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer
-llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer
-mixtral-8x7b-instruct   # good quality with small chunks
-
-llama-3-8b-instruct
-llama-3-70b-instruct
-# and more ... change the model to experiment. 
+sonar-deep-research          128k   Chat Completion
+sonar-reasoning-pro          128k   Chat Completion
+sonar-reasoning              128k   Chat Completion
+sonar-pro                    200k   Chat Completion
+sonar                        128k   Chat Completion
+r1-1776                      128k   Chat Completion
 ```
+
+##### Previous models were:
+
+~~llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer~~
+~~llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer~~
+~~mixtral-8x7b-instruct   # good quality with small chunks~~
+
+~~llama-3-8b-instruct~~
+~~llama-3-70b-instruct~~
+
+... and more ... change the model to experiment.
 
 ### Recommended
 
-Also install and run Simon Willison's [`llm` CLI tool](https://til.simonwillison.net/llms/claude-hacker-news-themes). It is Python-based and can be installed with `pip install llm`. It is a great tool to get a better understanding of the OpenAI API output.
+##### llm CLI tool
+
+Also install and run Simon Willison's great [`llm` CLI tool](https://llm.datasette.io/), [for HN topic thread summarization](https://til.simonwillison.net/llms/claude-hacker-news-themes). `llm` is Python-based and can be installed with `pip install llm` (or any other Python package manager).
 
 A shellscript [`hn-summary-simonw.sh`](hn-summary-simonw.sh) wrapping the `llm` command is provided in the root directory of this repo.
 
 Script `hn-summary-simonw.sh` works similarly to script `HN-ThreadSummarizer.py`, but provides a much more compact view of the HN Thread output. Well-summarized _conversation themes_ are returned in a more readable way.
+
+##### Hackerstrat Custom GPT
+
+If you have a ChatCPT Plus account, try some Custom GPTs for HN, e.g. [hackerstract](https://chatgpt.com/g/g-67ae411d65f8819183e910d64e5c4a01-hackerstract) Summarizer. It has conversation starters, and very good summarization capabilities.
 
 ### TODO
 
