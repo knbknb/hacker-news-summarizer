@@ -1,3 +1,6 @@
 html2text>=2020.1.16
 python-dotenv>=1.0.1
 Requests>=2.32.0
+openai>=1.40.0
+pydantic>=2.0.0
+tiktoken>=0.7.0

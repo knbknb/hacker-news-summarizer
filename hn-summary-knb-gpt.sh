@@ -8,15 +8,71 @@
 
 # Most of this script is Error checking: arguments, the existence of the script, the default topic, network issues
 # The actual call to the Python script is at the end.
+source $HOME/.virtualenvs/openai-api-v1/bin/activate
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <hn_id> [--topic <topic>] [--model <model>] [--key <api_key>]"
+    exit 1
+fi
 
 if [[ ! $1 =~ ^[0-9]+$ ]]; then
-  echo "Please provide a valid integer (the HN thread number) as the first argument."
-  exit 1
+    echo "Please provide a valid integer (the HN thread number) as the first argument."
+    exit 1
 fi
+
+HN_ITEM_ID="$1"
+shift
 
 HN_SCRIPTS_PATH=$(pwd)
 HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
 DEFAULT_MODEL="gpt-4o-mini"
+#DEFAULT_MODEL="gpt-5-mini"
+
+TOPIC_ARG=""
+MODEL_ARG="$DEFAULT_MODEL"
+KEY_ARG=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --topic)
+            if [[ -z "$2" || "$2" == --* ]]; then
+                echo "Error: --topic requires a value."
+                exit 1
+            fi
+            TOPIC_ARG="$2"
+            shift 2
+            ;;
+        --model)
+            if [[ -z "$2" || "$2" == --* ]]; then
+                echo "Error: --model requires a value."
+                exit 1
+            fi
+            MODEL_ARG="$2"
+            shift 2
+            ;;
+        --key)
+            if [[ -z "$2" || "$2" == --* ]]; then
+                echo "Error: --key requires a value."
+                exit 1
+            fi
+            KEY_ARG="$2"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            if [[ -z "$TOPIC_ARG" ]]; then
+                TOPIC_ARG="$1"
+                shift 1
+            else
+                echo "Unknown argument: $1"
+                exit 1
+            fi
+            ;;
+    esac
+done
 
 if [[ ! -f "$HN_SCRIPT_NAME" ]];
 then
@@ -32,15 +88,14 @@ fi
 # - curl/jq command commented out, as fallback alternative
 
 #default_topic=$(curl -s "https://hn.algolia.com/api/v1/items/$1" | jq -r .title)
-default_topic=$(python3 -c "import sys, requests, json; response = requests.get(f'https://hn.algolia.com/api/v1/items/{sys.argv[1]}'); print(json.loads(response.text).get('title', ''))" "$1")
-# If any of this fails, cannot continue
-if [ $? -ne 0 ] || [ -z "$default_topic" ]; then
-    echo "Error: Unable to retrieve the default topic. Network issue or invalid HN item."
-    exit 1
-fi
+if [ -z "$TOPIC_ARG" ]; then
+    default_topic=$(python3 -c "import sys, requests, json; response = requests.get(f'https://hn.algolia.com/api/v1/items/{sys.argv[1]}'); print(json.loads(response.text).get('title', ''))" "$HN_ITEM_ID")
+    # If any of this fails, cannot continue
+    if [ $? -ne 0 ] || [ -z "$default_topic" ]; then
+        echo "Error: Unable to retrieve the default topic. Network issue or invalid HN item."
+        exit 1
+    fi
 
-# Check if a topic argument is provided by the user. If not, ask for it.
-if [ -z "$2" ]; then
     read -p "No topic provided. Do you want to use the default topic '$default_topic'? (y/n): " use_default
     if [ "$use_default" = "y" ]; then
         topic="$default_topic"
@@ -48,10 +103,15 @@ if [ -z "$2" ]; then
         read -p "Please enter a topic description: " topic
     fi
 else
-    topic="$2"
+    topic="$TOPIC_ARG"
 fi
 # Run the HN-ThreadSummarizer.py script
-./HN-ThreadSummarizer.py --hnitem "$1" --model "$DEFAULT_MODEL" --topic "$topic"
+cmd=("./HN-ThreadSummarizer.py" --hnitem "$HN_ITEM_ID" --model "$MODEL_ARG" --topic "$topic")
+if [[ -n "$KEY_ARG" ]]; then
+    cmd+=(--key "$KEY_ARG")
+fi
+
+"${cmd[@]}"
 # --url "https://api.perplexity.ai/chat/completions"
 
 # At the end, run this script to show alternative models:
