@@ -21,9 +21,10 @@ fi
 id="$1"
 
 # Parse the optional -m argument. 
-# If not provided, use the default model to gemini-pro (has largest context window)
+# If not provided, use the default model to gpt-5-nano (has reasonably large context window, is still inexpensive)
 if [[ -z $2 ]]; then
-  set -- "$1" "gemini-2.0-flash-lite"
+  set -- "$1" "gpt-5-nano"
+  # set -- "$1" "gemini-2.0-flash-lite"
 fi
 model=$2
 curl -s "https://hn.algolia.com/api/v1/search?tags=story_$id" | \

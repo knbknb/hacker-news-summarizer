@@ -1,15 +1,15 @@
 {
   "MD055": false, # Allow multiple headers with the same content
   "MD056": false, # Allow unordered list items to be indented with tabs
-  "MD013": false,  # Allow line length to exceed 80 characters
-  "MD032": false,  # Blank lines around list items
-  "MD029": false,  # Allow ordered list items to be mixed with unordered list items
-  "MD036": false,  # Allow emphasis to be used instead of a header
-  "MD005": false,  # Allow inconsistent indentation for list items at the same level
-  "MD007": false,  # Allow unordered list indentation to be inconsistent
-  "MD030": false,  # Allow list items to be indented with tabs
-  "MD049": false,  # Allow emphasis-style
-  "MD041": false,  # Allow first line in file to not be a top level header
-  "MD022": false,  # Blanks lines after headers
-  "MD034": false,  # Bare URLs allowed
+  "MD013": false, # Allow line length to exceed 80 characters
+  "MD032": false, # Blank lines around list items
+  "MD029": false, # Allow ordered list items to be mixed with unordered list items
+  "MD036": false, # Allow emphasis to be used instead of a header
+  "MD005": false, # Allow inconsistent indentation for list items at the same level
+  "MD007": false, # Allow unordered list indentation to be inconsistent
+  "MD030": false, # Allow list items to be indented with tabs
+  "MD049": false, # Allow emphasis-style
+  "MD041": false, # Allow first line in file to not be a top level header
+  "MD022": false, # Blanks lines after headers
+  "MD034": false, # Bare URLs allowed
 }
