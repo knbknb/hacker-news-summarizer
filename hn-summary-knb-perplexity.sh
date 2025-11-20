@@ -15,7 +15,7 @@ if [[ ! $1 =~ ^[0-9]+$ ]]; then
 fi
 
 HN_SCRIPTS_PATH=$(pwd)
-HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
+HN_SCRIPT_NAME="./HN-ThreadSummarizer-completion-api.py"
 DEFAULT_MODEL="sonar-pro" # 
 MODELS="sonar  sonar-pro"
 # All models, Okt. 2024:
@@ -27,7 +27,7 @@ then
     echo "'$HN_SCRIPT_NAME' script could not be found."
     echo " I've looked in the current directory,"
     echo "      '$HN_SCRIPTS_PATH'"
-    echo "call: ./HN-ThreadSummarizer.py --hnitem "$1" --model "$DEFAULT_MODEL" --topic "$topic""
+    echo "call: ./HN-ThreadSummarizer-completion-api.py --hnitem "$1" --model "$DEFAULT_MODEL" --topic "$topic""
     echo "For Alternative models: (besides 'gpt-4o')"
     echo "call: ./script_attic/show-perplexity-models.py"
     exit
@@ -65,9 +65,9 @@ PERP_KEY=$(grep PERPLEXITY_API_KEY .env | cut -d '=' -f 2)
 for model in $MODELS; do
     echo ""
     echo "####################  Running Perplexity model: '$model'"
-    echo ./HN-ThreadSummarizer.py --hnitem "$1" --model "$model" --topic "$topic" \
+    echo ./HN-ThreadSummarizer-completion-api.py --hnitem "$1" --model "$model" --topic "$topic" \
       --url "$PERP_URL" --key "$PERP_KEY"
-    ./HN-ThreadSummarizer.py --hnitem "$1" --model "$model" --topic "$topic" \
+    ./HN-ThreadSummarizer-completion-api.py --hnitem "$1" --model "$model" --topic "$topic" \
       --url "$PERP_URL" --key "$PERP_KEY"
 done
 echo "run: "
