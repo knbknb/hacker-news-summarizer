@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import requests
 from bs4 import BeautifulSoup
+# Script to show current Perplexity models from their model cards page
+
+# Update Nov 2015: 
+##  Not longer works as Perplexity has removed their model cards page.
 
 # Fetch the HTML
 response = requests.get('https://docs.perplexity.ai/models/model-cards')

@@ -128,7 +128,7 @@ The script writes intermediate files into subdir `output/`. Those files are then
 
 ##### Perplexity API (Legacy Completions)
 
-Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) using the completion API version:
+Call [Perplexity API](https://docs.perplexity.ai/getting-started/overview) using the completion API version:
 
 ```bash
 TOPIC="why you're still single"
