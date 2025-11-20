@@ -25,8 +25,8 @@ shift
 
 HN_SCRIPTS_PATH=$(pwd)
 HN_SCRIPT_NAME="./HN-ThreadSummarizer.py"
-DEFAULT_MODEL="gpt-4o-mini"
-#DEFAULT_MODEL="gpt-5-mini"
+#DEFAULT_MODEL="gpt-4o-mini"
+DEFAULT_MODEL="gpt-5-mini"
 
 TOPIC_ARG=""
 MODEL_ARG="$DEFAULT_MODEL"
@@ -114,10 +114,10 @@ fi
 "${cmd[@]}"
 # --url "https://api.perplexity.ai/chat/completions"
 
-# At the end, run this script to show alternative models:
+# At the end, run this to show alternative models:
 echo ""
 echo "# ---------------------------------"
-echo "# Alternative models, besides 'gpt-4o', '4o': (First run 'llm models to list names of available models)"
-llm models
+echo "# Alternative models, besides '$DEFAULT_MODEL': (First run 'llm models to list names of available models)"
 echo "# ---------------------------------"
-echo "# (Also run 'llm plugins | jq .[].name' to list installed llm plugins), and check keys with 'llm keys'"
+echo "# Also run 'llm plugins | jq .[].name' to list installed llm plugins,"
+echo "#  and check keys with 'llm keys' and 'cat .env'"

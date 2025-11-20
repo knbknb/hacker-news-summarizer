@@ -65,6 +65,8 @@ PERP_KEY=$(grep PERPLEXITY_API_KEY .env | cut -d '=' -f 2)
 for model in $MODELS; do
     echo ""
     echo "####################  Running Perplexity model: '$model'"
+    echo ./HN-ThreadSummarizer.py --hnitem "$1" --model "$model" --topic "$topic" \
+      --url "$PERP_URL" --key "$PERP_KEY"
     ./HN-ThreadSummarizer.py --hnitem "$1" --model "$model" --topic "$topic" \
       --url "$PERP_URL" --key "$PERP_KEY"
 done
