@@ -5,27 +5,66 @@ USAGE.md
 
 ## Synopsis
 
-Summarize ["HN threads"](https://news.ycombinator.com/) using the OpenAI API or Perplexity API.
+Summarize ["HN threads"](https://news.ycombinator.com/) using the OpenAI Responses API (with structured outputs) or the legacy Completions API (for Perplexity and other providers).
 
 ```bash
-# Calls the OpenAI gpt-4o-mini model (requires you to have an Account with OpenAI)
-./HN-ThreadSummarizer.py--hnitem 39416436 --topic "Why You're Still Single"
+# Modern: OpenAI Responses API with structured outputs (requires openai>=1.40.0)
+./HN-ThreadSummarizer.py --hnitem 39416436 --topic "Why You're Still Single" --model gpt-5-mini
+
+# Legacy: Completions API for Perplexity and other OpenAI-compatible endpoints
+./HN-ThreadSummarizer-completion-api.py --hnitem 39416436 --topic "Why You're Still Single" \
+  --model sonar-pro --key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+
+# Shell script wrappers:
+./hn-summary-knb-gpt.sh 39416436 --topic "Why You're Still Single" --model gpt-5-mini
+./hn-summary-knb-perplexity.sh 39416436  # Interactive topic selection
 
 # Expected output on the console
-# Read output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o--input-for-llm.txt...:  28525 chars read.
-# Number of data chunks: 3
-# Chunk 1 of 3 posted to https://api.openai.com/v1/chat/completions, model gpt-4o, topic # HN Topic: [Why You're Still Single](https://
-#...
+[tokenizer] chunk 1: 14325 tokens (58596 chars) / limit 12500
+Number of data chunks: 1
+chunk_num 1 of 1 processing with model gpt-5-mini
 
-# Processed, summarized output is written to a markdown file
-final_output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-4o.md
+# Processed, summarized output written to:
+final_output/Why-You-re-Still-Single-https-news-ycombinator-com-item-id-39416436-gpt-5-mini.md
 ```
 
 ## Description
 
-Use OpenAPI Python API to summarize (and flatten) a Hacker-News forum thread.
+Use OpenAI Python APIs to summarize (and flatten) a Hacker-News forum thread.
 
-The summary is written to a markdown file, into the `final_output` directory. The progress of the summarization is printed to the console.
+### Two Script Versions
+
+#### `HN-ThreadSummarizer.py` (Modern - Structured Outputs)
+
+- **API**: OpenAI Responses API
+- **Features**:
+  - Structured outputs using Pydantic models (`ThreadSummaryResponse`)
+  - Token-based chunking with tiktoken
+  - Automatic version detection (requires `openai>=1.40.0`)
+  - Supports GPT-4o, GPT-5 models
+- **Shell wrapper**: `hn-summary-knb-gpt.sh`
+- **Usage**: Best for modern OpenAI models with structured output support
+
+#### `HN-ThreadSummarizer-completion-api.py` (Legacy - Compatible)
+
+- **API**: Chat Completions API (OpenAI-compatible)
+- **Features**:
+  - Direct HTTP requests to `/chat/completions` endpoint
+  - Supports custom `--url` and `--key` parameters
+  - Character-based chunking
+  - Works with Perplexity, OpenAI, and other compatible providers
+- **Shell wrapper**: `hn-summary-knb-perplexity.sh`
+- **Usage**: Best for Perplexity API and other OpenAI-compatible services
+
+### Recent Changes (Nov 2025)
+
+- **Structured Outputs**: Migrated from Completions API to Responses API with Pydantic models for reliable table formatting
+- **Token-based Chunking**: Replaced character-based with tiktoken for accurate token counting
+- **Version Detection**: Automatic check for `openai>=1.40.0` with clear error messages
+- **Shell Script Updates**: Added support for `--topic`, `--model`, and `--key` flags
+- **Dual Script Approach**: Separated modern (Responses API) and legacy (Completions API) versions
+
+The summary is written to a markdown file in the `final_output` directory. Progress is printed to the console.
 
 ## Run
 
@@ -40,53 +79,65 @@ You must have an account with OpenAI and have an API key.  OpenAI API access was
 
 (To use the OpenAI API, users now need to add a payment method and purchase credits . The minimum amount to start using the API was once \$5.00, but that may have changed. Check the [OpenAI platform page](https://platform.openai.com/) for current details.)
 
-#### Example runs
+#### Using Shell Script Wrappers
+
+Two convenience scripts are provided:
+
+**For OpenAI (Structured Outputs):**
+
+```bash
+# Uses HN-ThreadSummarizer.py with Responses API
+./hn-summary-knb-gpt.sh 39416436 --topic "career advice" --model gpt-5-mini
+
+# Interactive topic selection (fetches HN thread title)
+./hn-summary-knb-gpt.sh 39416436
+
+# Override API key
+./hn-summary-knb-gpt.sh 39416436 --topic "linux" --key sk-proj-...
+```
+
+**For Perplexity (Completions API):**
+
+```bash
+# Uses HN-ThreadSummarizer-completion-api.py
+# Automatically uses PERPLEXITY_API_KEY from .env
+./hn-summary-knb-perplexity.sh 39416436
+
+# Tests multiple models: sonar, sonar-pro
+./hn-summary-knb-perplexity.sh 39416436 --topic "AI discussion"
+```
+
+#### Example runs (Direct Python Scripts)
 
 (See also [EXAMPLE-OUTPUT.md](EXAMPLE-OUTPUT.md))
 
-##### This writes to a file
+##### Using OpenAI Directly
 
 Here an OPENAI_API_KEY _was_ defined before, as a shell command, such that a valid environment variable exists for the script to use.
 
 ```bash
+# Modern Responses API version (requires openai>=1.40.0)
+./HN-ThreadSummarizer.py --hnitem 39416436 --topic "why you're still single" --model gpt-5-mini
 
-`./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "why you're still single"`
+# With explicit API key
+./HN-ThreadSummarizer.py --hnitem 39416436 --topic "why you're still single" \
+  --model gpt-4o --key $OPENAI_API_KEY
 ```
 
-The script writes intermediate files into subdir `output/`.  Those files are then re-read, processed by the script.  
-This is useful for getting immediate feedback, or for debugging.
+The script writes intermediate files into subdir `output/`. Those files are then re-read and processed by the script. This is useful for getting immediate feedback or for debugging.
 
-```bash
-`./hn-thread2txt2chatgpt2md.py --hnitem "https://news.ycombinator.com/item?id=39416436"  \
-  --topic "why you're still single"  --api_key  $OPENAI_API_KEY`
-```
+##### Perplexity API (Legacy Completions)
 
-Note:
-
-- Assume no OPENAI_API_KEY was pre-defined in the environment. Hence the OPENAI_API_KEY needs to be passed as a command-line argument.  
-- You can also pass in the complete URL of the HN thread, as an argument to the script. (instead of just the thread id)
-
-After summarizing, fine-tune the `.md` output file to your needs, by hand. That file will probably have a few formatting glitches. The script does not fix those for you.
-
-But during fixing you start to read the summarized comments and get a better understanding of the HN thread.
-
-##### This is the shortest version
-
-Works provided you have the environment variable `OPENAI_API_KEY` defined properly.
-
-```bash
-OPENAI_API_KEY=sk-0...           # your OpenAI API key, for better results
-TOPIC="why you're still single"  # filename slug
-./HN-ThreadSummarizer.py --hnitem "39416436"  --topic "$TOPIC" 
-```
-
-Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) instead (provided you have an API key for it) - for experimenting, e.g. checking out the differences in summarization quality between the APIs/model endpoints offered by Perplexity.
+Call [Perplexity API](https://docs.perplexity.ai/docs/model-cards) using the completion API version:
 
 ```bash
 TOPIC="why you're still single"
-PERPLEXITY_API_KEY=pplx-1d...    # alternative API key, for experimenting
-# 3 more arguments are needed: --model, --api_key, --url
-./HN-ThreadSummarizer.py --hnitem 39416436  --topic $TOPIC --model sonar  --api_key $PERPLEXITY_API_KEY --url https://api.perplexity.ai/chat/completions
+PERPLEXITY_API_KEY=pplx-1d...    # from .env or environment
+
+# Using completion API script with custom URL
+./HN-ThreadSummarizer-completion-api.py --hnitem 39416436 --topic "$TOPIC" \
+  --model sonar-pro --key $PERPLEXITY_API_KEY \
+  --url https://api.perplexity.ai/chat/completions
 ```
 
 For Perplexity API, try these values for the `--model` argument:
@@ -100,7 +151,7 @@ sonar                        128k   Chat Completion
 r1-1776                      128k   Chat Completion
 ```
 
-##### Previous models were:
+##### Previous models
 
 ~~llama-3.1-8b-instruct   # fast but degrades into repetitions, and refusals to answer~~  
 ~~llama-3.1-70b-instruct  # slower, also degrades into repetitions, and refusals to answer~~  
@@ -132,6 +183,11 @@ If you have a ChatCPT Plus account, try some Custom GPTs for HN, e.g. [hackerstr
 - [x] ~~Correct code that processes chunked OpenAI-API-output (Table header is written for each chunk)~~ Better prompt and model gpt-4o does a good job
 - [x] ~~Use `textwrap` package to wrap long lines in the markdown file, do more intelligent line breaks and chunking~~ Not needed, found workaround with better table formatting
 - [x] ~~Add an explanation of installation and 1 run example to an USAGE.md or EXAMPLE-OUTPUT.md file~~
+- [x] Migrate to OpenAI Responses API with structured outputs (Pydantic models)
+- [x] Implement token-based chunking with tiktoken
+- [x] Add version detection for openai>=1.40.0
+- [x] Create legacy completion API version for Perplexity compatibility
+- [x] Update shell scripts to support --topic, --model, --key flags
 - [ ] Experiment with various API parameters (chunk size, model, temperature, custom instructions etc.)
 - [ ] Add an analysis and comparison of the model outputs
 - [ ] (misc) Fetch correct title of HN Posting (can get updated by HN Moderators, even after days), and use that title as a better "slug" for the output file
