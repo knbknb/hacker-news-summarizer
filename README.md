@@ -33,4 +33,4 @@ Use LLM Python APIs (e.g. OpenAI, Perplexity) to summarize (and flatten) a Hacke
 
 The summary is written to a markdown file in the `final_output` directory. Progress is printed to the console.
 
-For more, read [USAGE.md](USAGE.md) and [EXAMPLE-OUTPUT.md](EXAMPLE-OUTPUT.md).
+For more, read [INSTALLATION.md](INSTALLATION.md), [USAGE.md](USAGE.md) and [EXAMPLE-OUTPUT.md](EXAMPLE-OUTPUT.md).

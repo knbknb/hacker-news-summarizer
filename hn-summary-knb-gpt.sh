@@ -8,7 +8,18 @@
 
 # Most of this script is Error checking: arguments, the existence of the script, the default topic, network issues
 # The actual call to the Python script is at the end.
-source $HOME/.virtualenvs/openai-api-v1/bin/activate
+
+# This section is highly specific to my setup, adjust as needed:
+if [[ "$(hostname)" == "wb33" ]]; then
+source ~/code/git/_my/ai-stuff/hacker-news-summarizer/.venv-uv/bin/activate
+fi
+if [[ "$(hostname)" == "well" ]]; then
+    source $HOME/.virtualenvs/openai-api-v1/bin/activate
+else
+    if [[ -f "./.venv-uv/bin/activate" ]]; then
+        source ./.venv-uv/bin/activate
+    fi
+fi
 
 if [[ $# -lt 1 ]]; then
     echo "Usage: $0 <hn_id> [--topic <topic>] [--model <model>] [--key <api_key>]"

@@ -126,6 +126,8 @@ Here an OPENAI_API_KEY _was_ defined before, as a shell command, such that a val
 
 The script writes intermediate files into subdir `output/`. Those files are then re-read and processed by the script. This is useful for getting immediate feedback or for debugging.
 
+For setup and installation details see [INSTALLATION.md](INSTALLATION.md).
+
 ##### Perplexity API (Legacy Completions)
 
 Call [Perplexity API](https://docs.perplexity.ai/getting-started/overview) using the completion API version:
