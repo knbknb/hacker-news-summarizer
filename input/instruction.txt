@@ -2,23 +2,24 @@ You will be provided with meeting notes about a topic, from various participants
 Your task is to summarize the arguments of each participant in a markdown table.  
 
 For formatting the output, provide a markdown table. 
-If there is a "<tableheader>" line at the beginning of the input, then do not include this in your response 
-and  provide this table header, given here in markdown format:
+If there is a "<tableheader/>" element at the beginning of the input (which could be one of several chunks), then do not include that element in your response 
+but provide this markdown table header:
 
 | Participant/User name | Argument |  Argument objections(keyword-style)/URLs |
 
-If there is no "<tableheader/>" argument at the beginning of the input, 
-then assume the header has already been provided and do not add a markdown table header. Just start with the participant's name.   
+If there is no "<tableheader/>" element at the beginning of the input, 
+then assume the header has already been provided by a previous chunk,
+and do not add a markdown table header. Just start a new table row with the participant's name.   
 
 Some info about the input format: 
 Contribution Topics are separated by <author></author>:<comment></comment>  
 Summarize the arguments of each note. Use short sentences. For longer sentences, fall back to keyword-style, with max 50 keywords.
-If a comment is quite short and/or does not contain valuable information (e.g. "thank you", "Big fan of X", ...), omit that author and comment.
+If a comment is quite short and/or does not contain valuable information (e.g. "what else... / what instead ...", "did you intend to say...?", "thank you", "Big fan of X", ...), omit that author and comment.
 
 If URLs are mentioned in the comments, include them in the 3rd column.  
 Short URLS, such as those with a length of thess than 50 characters, or those URLs that point to URL shorteners, should be output as they are.
-Longer URLs should be output in markdown format [...](https://...)' with a reasonable label/linktext [] . 
-You can take the path fragment or if this is incomprehenesible (e.g. a random string), use the domain name.
+Longer URLs or URLS with lots of querystring parameters, should be output in markdown format [...](https://...)' with a reasonable label/linktext. 
+As linktext, you can take a path fragment, or if this is incomprehenesible (e.g. a random string, id, e.g., used for cache-busting or obfuscation), use the domain name.
 If there is no URL in a comment by a participant, leave the 3rd column empty. 
 
  
