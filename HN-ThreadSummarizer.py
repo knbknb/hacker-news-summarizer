@@ -4,6 +4,8 @@ import os
 import sys
 import re
 import html
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
@@ -88,6 +90,17 @@ class Utilities:
         return query_params['id']
 
     @staticmethod
+    def sanitize_for_xml(text):
+        """Sanitize text content for XML: remove invalid XML characters and normalize whitespace."""
+        if text is None:
+            return ""
+        # Remove XML-invalid control characters (keep tab, newline, carriage return)
+        text = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
+        # Normalize multiple whitespace/newlines to single space for cleaner output
+        text = re.sub(r'\s+', ' ', text).strip()
+        return text
+
+    @staticmethod
     def download_hn_thread(hn_item_id, intermediate_file):
         url = f"https://hn.algolia.com/api/v1/items/{hn_item_id}"
         response = requests.get(url)
@@ -95,20 +108,43 @@ class Utilities:
         
         data = response.json()
         
-        def extract_comments(comment):
-            comments = []
-            if comment.get('text'):
-                comments.append(f"<author>{html.escape(comment['author'])}</author><comment>{html.escape(comment['text'])}</comment>")
+        # Create proper XML structure
+        root = ET.Element("thread")
+        root.set("hn_item_id", str(hn_item_id))
+        
+        # Add tableheader element
+        ET.SubElement(root, "tableheader")
+        
+        def extract_comments(comment, parent_element):
+            if comment.get('text') and comment.get('author'):
+                entry = ET.SubElement(parent_element, "entry")
+                author_elem = ET.SubElement(entry, "author")
+                author_elem.text = Utilities.sanitize_for_xml(comment['author'])
+                comment_elem = ET.SubElement(entry, "comment")
+                # Decode HTML entities in comment text, then sanitize for XML
+                comment_text = html.unescape(comment.get('text', ''))
+                # Strip HTML tags but keep text content
+                comment_text = re.sub(r'<[^>]+>', ' ', comment_text)
+                comment_elem.text = Utilities.sanitize_for_xml(comment_text)
             for child in comment.get('children', []):
-                comments.extend(extract_comments(child))
-            return comments
+                extract_comments(child, parent_element)
         
-        comments = extract_comments(data)
+        extract_comments(data, root)
         
-        with open(intermediate_file, 'w') as f:
-            f.write('<tableheader/>' + "\n")
-            for comment in comments:
-                f.write(comment + "\n")
+        # Create XML tree and write with proper formatting
+        tree = ET.ElementTree(root)
+        
+        # Use minidom for pretty printing
+        xml_str = ET.tostring(root, encoding='unicode', method='xml')
+        dom = minidom.parseString(xml_str)
+        pretty_xml = dom.toprettyxml(indent="  ", encoding=None)
+        
+        # Remove extra blank lines that minidom adds
+        lines = [line for line in pretty_xml.split('\n') if line.strip()]
+        pretty_xml = '\n'.join(lines)
+        
+        with open(intermediate_file, 'w', encoding='utf-8') as f:
+            f.write(pretty_xml)
 
 
 class LLMInteraction:
@@ -302,10 +338,10 @@ class LLMInteraction:
                     response_data = self._extract_parsed_response(structured_response)
                     
                     if response_data:
-                        # Write table header for first chunk
-                        if is_first_chunk and '<table' in chunk_text:
+                        # Write table header before the first data row
+                        if is_first_chunk:
                             print("| Participant/User name | Argument | Argument objections(keyword-style)/URLs |", file=f)
-                            print("|---|---|---|", file=f)
+                            print("| --- | --- | --- |", file=f)
                             is_first_chunk = False
                         
                         # Write each comment summary as a table row
@@ -360,7 +396,7 @@ class Main:
         topic_line = f"# HN Topic: [{self.config['topic']}]({hnitem}), (hnitem id {hnitem_id}), and discussion"
         topic_cleaned = re.sub(r'\W+', '-', f"{self.config['topic']}-{hnitem}")
         
-        intermediate_file = os.path.join("output", f"{topic_cleaned}-{self.config['model']}.txt")
+        intermediate_file = os.path.join("output", f"{topic_cleaned}-{self.config['model']}.xml")
         final_outfile = os.path.join("final_output", f"{topic_cleaned}-{self.config['model']}.md")
         max_output_tokens = 5000
         chunk_token_limit = int(max_output_tokens * 2.5)

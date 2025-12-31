@@ -128,7 +128,9 @@ fi
 # At the end, run this to show alternative models:
 echo ""
 echo "# ---------------------------------"
-echo "# Alternative models, besides '$DEFAULT_MODEL': (First run 'llm models to list names of available models)"
+echo "# Alternative models, besides '$DEFAULT_MODEL':"
+echo "# - if you have llm installed,"
+echo "#   - run 'llm models' to list names of available models"
+echo "#   - also run 'llm plugins | jq .[].name' to list installed llm plugins,"
+echo "#   - check keys with 'llm keys' and 'cat .env'"
 echo "# ---------------------------------"
-echo "# Also run 'llm plugins | jq .[].name' to list installed llm plugins,"
-echo "#  and check keys with 'llm keys' and 'cat .env'"

@@ -12,4 +12,5 @@
   "MD041": false, # Allow first line in file to not be a top level header
   "MD022": false, # Blanks lines after headers
   "MD034": false, # Bare URLs allowed
+  "MD060": false  # Allow whitespace inside table pipes
 }
