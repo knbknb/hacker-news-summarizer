@@ -303,7 +303,7 @@ class LLMInteraction:
                     
                     if response_data:
                         # Write table header for first chunk
-                        if is_first_chunk and '<tableheader/>' in chunk_text:
+                        if is_first_chunk and '<table' in chunk_text:
                             print("| Participant/User name | Argument | Argument objections(keyword-style)/URLs |", file=f)
                             print("|---|---|---|", file=f)
                             is_first_chunk = False
