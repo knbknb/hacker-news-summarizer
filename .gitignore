@@ -6,3 +6,4 @@
 output/*
 !input/instruction.txt
 .env-example
+hn_summarizer/__pycache__/
