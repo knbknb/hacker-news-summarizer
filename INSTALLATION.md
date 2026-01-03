@@ -2,13 +2,16 @@
 # Installation
 
 This document explains how to install dependencies and set up the environment required to run the Hacker-News thread summarizer scripts.
+File: /home/knut/code/git/ai-stuff/hacker-news-summarizer/INSTALLATION.md
 
 Two common installation methods are shown below: using your system Python + pip and using the `uv` environment manager.
 
-## 1) System Python + pip (recommended / widely supported)
+## 1) Virtual Environment + System Python + pip (recommended / widely supported)
 
-- Make sure you have Python 3.10+ installed and that `python3` and `pip` are available on your PATH.
-- Create and activate a virtual environment (recommended):
+- This uses your system Python executable only to create an isolated virtual environment (e.g., .venv). It does not modify system-wide Python packages or binaries — all project packages are installed inside the venv.
+- pip is needed so packages can be installed into that venv; installing or using pip in the venv is a local operation and does not change your system Python.
+- Activating the venv adjusts your shell PATH for the session so the environment’s Python and pip are used; deactivating restores your normal shell.
+- Create and activate the virtual environment (recommended):
 
 ```bash
 python3 -m venv .venv
@@ -19,19 +22,23 @@ source .venv/bin/activate   # on macOS / Linux
 - Upgrade pip and install requirements:
 
 ```bash
-python -m ensurepip --upgrade   # ensures pip is available in some envs
+python -m ensurepip   --upgrade   # ensures pip is available in some envs
 python -m pip install --upgrade pip
+
 pip install -r requirements.txt
 ```
 
 - Optional (Jupyter/IPython kernel support):
 
+This approach is compatible with VS Code, Jupyter and most CI systems.
+
 ```bash
+# Install Jupyter kernel support for this virtual environment
 pip install ipykernel
+# Register the kernel so notebooks/VS Code can select it by name
 python -m ipykernel install --user --name=hn-thread-summarizer
 ```
 
-This approach is compatible with VS Code, Jupyter and most CI systems.
 
 ## 2) Using `uv` (alternative environment manager)
 

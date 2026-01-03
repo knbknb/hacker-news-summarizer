@@ -280,7 +280,7 @@ class LLMInteraction:
                         fallback_response = self.responses_api.create(
                             model=self.config['model'],
                             input=messages,
-                            temperature=0.1,
+                            #temperature=0.1,
                             max_output_tokens=max_output_tokens,
                         )
                         fallback_text = self._extract_text_output(fallback_response)
