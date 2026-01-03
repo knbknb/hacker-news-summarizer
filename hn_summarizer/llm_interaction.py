@@ -87,7 +87,7 @@ class LLMInteraction:
         output_items = getattr(response, "output", None)
         if output_items:
             for item in output_items:
-                for content in getattr(item, "content", []):
+                for content in (getattr(item, "content", []) or []):
                     parsed_payload = getattr(content, "parsed", None)
                     if parsed_payload:
                         if isinstance(parsed_payload, ThreadSummaryResponse):
@@ -116,23 +116,28 @@ class LLMInteraction:
         Returns:
             Extracted text as a string
         """
-        texts = []
-
+        # Try direct output_text first (preferred)
         direct_output_text = getattr(response, "output_text", None)
         if direct_output_text:
             if isinstance(direct_output_text, str):
-                texts.append(direct_output_text)
+                return direct_output_text.strip()
             elif isinstance(direct_output_text, list):
-                texts.extend(str(t) for t in direct_output_text if t)
+                return "\n".join(str(t) for t in direct_output_text if t).strip()
 
+        # Fall back to iterating through output items
+        texts = []
         output_items = getattr(response, "output", None)
         if output_items:
             for item in output_items:
-                for content in getattr(item, "content", []):
+                for content in (getattr(item, "content", []) or []):
                     text_value = getattr(content, "text", None)
                     if text_value:
                         texts.append(text_value)
-        if not texts and hasattr(response, "model_dump"):
+        if texts:
+            return "\n".join(texts).strip()
+
+        # Last resort: model_dump
+        if hasattr(response, "model_dump"):
             dumped = response.model_dump()
             for item in dumped.get("output", []):
                 for content in item.get("content", []):
@@ -290,3 +295,88 @@ class LLMInteraction:
                         print(f"Fallback also failed for chunk {i}: {str(fallback_error)}", file=sys.stderr)
                 
                 i += 1
+
+    def categorize_arguments(self, markdown_file, max_output_tokens=4096):
+        """
+        Second pass: Read the markdown file and categorize the arguments.
+        
+        Args:
+            markdown_file: Path to the markdown file to process
+            max_output_tokens: Maximum tokens for LLM response
+            
+        Returns:
+            The path to the updated file with categories inserted
+        """
+        print(f"Starting second pass: categorizing arguments in {markdown_file}", file=sys.stderr)
+        
+        with open(markdown_file, 'r') as f:
+            content = f.read()
+        
+        # Extract the table content for categorization
+        categorization_prompt = """Group the arguments from the table into meaningful categories. Invent your own categories. Output only those proposed new categories.
+
+Format your response as:
+
+Here are proposed categories for organizing the arguments:
+
+1. Category Name
+- Sub-point about what this category covers
+- Another sub-point
+
+2. Another Category Name
+- Sub-point
+- Another sub-point
+
+(continue for all categories)"""
+        
+        messages = [
+            {
+                "role": "system",
+                "content": [
+                    {"type": "input_text", "text": categorization_prompt}
+                ]
+            },
+            {
+                "role": "user",
+                "content": [
+                    {"type": "input_text", "text": content}
+                ]
+            }
+        ]
+        
+        try:
+            response = self.responses_api.create(
+                model=self.config['model'],
+                input=messages,
+                max_output_tokens=max_output_tokens,
+            )
+            
+            categories_text = self._extract_text_output(response)
+            
+            if categories_text:
+                # Find the Date/LLM line and insert categories after it
+                lines = content.split('\n')
+                new_lines = []
+                inserted = False
+                
+                for i, line in enumerate(lines):
+                    new_lines.append(line)
+                    # Insert after the "## Date:" line
+                    if not inserted and line.startswith('## Date:'):
+                        new_lines.append('')  # blank line
+                        new_lines.append(categories_text)
+                        new_lines.append('')  # blank line
+                        inserted = True
+                
+                # Write back to the same file
+                with open(markdown_file, 'w') as f:
+                    f.write('\n'.join(new_lines))
+                
+                print(f"Categories inserted into {markdown_file}", file=sys.stderr)
+            else:
+                print("No categories generated from LLM response", file=sys.stderr)
+                
+        except Exception as e:
+            print(f"Error during categorization: {str(e)}", file=sys.stderr)
+        
+        return markdown_file

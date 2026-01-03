@@ -86,6 +86,9 @@ class HNSummarizerCLI:
         print(f"Number of data chunks: {len(chunked_rawtext)}", file=sys.stderr)
         
         llm_interaction.send_to_llm(topic_line, chunked_rawtext, instruction, final_outfile, max_output_tokens)
+        
+        # Second pass: categorize the arguments
+        llm_interaction.categorize_arguments(final_outfile, max_output_tokens)
 
 
 def main():
